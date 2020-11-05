@@ -1,0 +1,15 @@
+{
+    "name": "keeb-bot",
+    "version": "0.0.1",
+    "author": "Natsuki Takahari",
+    "description": "A bot for the 40s mechanical keyboard Discord server.",
+    "main": "server.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node server.js"
+    },
+    "dependencies": {
+        "discord.js": "11.2.1",
+        "dotenv": "7.0.0"
+    }
+}
