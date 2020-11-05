@@ -32,16 +32,6 @@ client.on('message', msg => {
             console.log(`40s channel posted soundtest: ${msg.author.username} ${url}`);
             client.channels.get(ENV.FORTIES_SOUNDTEST).send(`Posted by: ${msg.author}\n${url}`);
         }
-        if (msg.content.split(` `)[0] =='?addgb' && msg.channel==ENV.BOT_CHANNEL) {
-            if (msg.content.split(` `)[1]=='help') {
-                console.log('40s channel posted help addgb')
-                client.channels.get(ENV.BOT_CHANNEL).send('?addgb <start date> <end date> <GB Name>')
-            }
-            else {
-                client.channels.get(ENV.BOT_CHANNEL).send("Added GB")
-            }
-        }
-
     }
 });
 
