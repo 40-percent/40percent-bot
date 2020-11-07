@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "CommonJS",
+    "module": "ES2015",
     "outDir": "build",
     "allowJs": false,
     "target": "ES2019",
