@@ -1,6 +1,7 @@
 import { Message } from 'discord.js';
 
-const dotenv = require('dotenv').config();
+import { config } from 'dotenv';
+config();
 
 const { Client, MessageAttachment, TextChannel } = require('discord.js');
 
@@ -27,6 +28,7 @@ client.on('message', async (msg: Message) => {
           console.log(
             `40s channel posted showcase: ${msg.author.username} ${url}`
           );
+
           const showcaseChannel = (await client.channels.fetch(
             ENV.FORTIES_SHOWCASE ?? ''
           )) as typeof TextChannel;

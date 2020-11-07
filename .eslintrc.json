@@ -1,8 +1,8 @@
 {
     "env": {
-        "browser": false,
         "commonjs": true,
-        "es2021": false
+        "es2021": true,
+        "node": true
     },
     "extends": [
         "eslint:recommended",
@@ -20,6 +20,6 @@
     ],
     "rules": {
         "@typescript-eslint/promise-function-async": "error",
-        "@typescript-eslint/no-explicit-any": "erroor"
+        "@typescript-eslint/no-explicit-any": "error"
     }
 }
