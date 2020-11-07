@@ -18,8 +18,8 @@ client.on('message', async (msg: Message) => {
     return;
   }
 
-  if (msg?.guild?.id === ENV.FORTIES_GUILD ?? '') {
-    if (msg.content.includes(ENV.FORTIES_SHOWCASE ?? '')) {
+  if (msg.guild?.id === ENV.FORTIES_GUILD) {
+    if (msg.content.includes(ENV.FORTIES_SHOWCASE)) {
       if (msg.attachments.size > 0) {
         msg.attachments.map(async (each) => {
           const url = each.proxyURL;
@@ -30,8 +30,8 @@ client.on('message', async (msg: Message) => {
           );
 
           const showcaseChannel = (await client.channels.fetch(
-            ENV.FORTIES_SHOWCASE ?? ''
-          )) as typeof TextChannel;
+            ENV.FORTIES_SHOWCASE
+          )) as TextChannel;
           await showcaseChannel.send(
             `Posted by: ${msg.author.toString()}`,
             attachment
@@ -40,16 +40,16 @@ client.on('message', async (msg: Message) => {
       }
     }
 
-    if (msg.content.includes(ENV.FORTIES_SOUNDTEST ?? '')) {
-      const url = msg.content.split(`<#${ENV.FORTIES_SOUNDTEST ?? ''}> `)[1];
+    if (msg.content.includes(ENV.FORTIES_SOUNDTEST)) {
+      const url = msg.content.split(`<#${ENV.FORTIES_SOUNDTEST}> `)[1];
 
       console.log(
         `40s channel posted soundtest: ${msg.author.username} ${url}`
       );
 
       const soundTestChannel = (await client.channels.fetch(
-        ENV.FORTIES_SOUNDTEST ?? ''
-      )) as typeof TextChannel;
+        ENV.FORTIES_SOUNDTEST
+      )) as TextChannel;
       await soundTestChannel.send(
         `Posted by: ${msg.author.toString()}\n${url}`
       );
