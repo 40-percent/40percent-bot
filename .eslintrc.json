@@ -1,0 +1,25 @@
+{
+    "env": {
+        "browser": false,
+        "commonjs": true,
+        "es2021": false
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking",
+        "prettier",
+        "prettier/@typescript-eslint"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": 12
+    },
+    "plugins": [
+        "@typescript-eslint"
+    ],
+    "rules": {
+        "@typescript-eslint/promise-function-async": "error",
+        "@typescript-eslint/no-explicit-any": "erroor"
+    }
+}
