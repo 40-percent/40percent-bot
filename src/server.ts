@@ -12,7 +12,7 @@ client.on('ready', () => {
   console.log('=== READY ===');
 });
 
-client.on('message', async (msg: Message) => {
+async function handleMessageAsync(msg: Message) {
   // Ignore messages from bots.
   if (msg.author.bot) {
     return;
@@ -55,6 +55,14 @@ client.on('message', async (msg: Message) => {
       );
     }
   }
-});
+}
 
-client.login(ENV.BOT_TOKEN);
+// We use this wrapper because typescript eslint will throw a fit if we return
+//  and unresolved promise instead of void in the client message handler.
+function handleMessageSyncWrapper(msg: Message): void {
+  void handleMessageAsync(msg);
+}
+
+client.on('message', handleMessageSyncWrapper);
+
+void client.login(ENV.BOT_TOKEN);
