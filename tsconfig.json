@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "module": "ES2015",
+    "outDir": "build",
+    "allowJs": false,
+    "target": "ES2019",
+    "strict": true,
+    "moduleResolution": "node",
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"],
+}
