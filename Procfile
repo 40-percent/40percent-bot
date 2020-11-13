@@ -1,1 +1,1 @@
-worker: node build/server.js
+worker: npx tsc && node build/server.js

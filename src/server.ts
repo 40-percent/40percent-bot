@@ -1,9 +1,9 @@
-import { config as dotenvConfig } from 'dotenv';
+// import { config as dotenvConfig } from 'dotenv';
 import { Message, Client, MessageAttachment, TextChannel } from 'discord.js';
 
-// As early as possible in your application, require and configure dotenv.
-// https://www.npmjs.com/package/dotenv#usage
-dotenvConfig();
+// // As early as possible in your application, require and configure dotenv.
+// // https://www.npmjs.com/package/dotenv#usage
+// dotenvConfig();
 
 const client = new Client();
 const ENV = process.env;
