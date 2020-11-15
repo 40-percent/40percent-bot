@@ -65,6 +65,4 @@ function handleMessageSyncWrapper(msg: Message): void {
 
 client.on('message', handleMessageSyncWrapper);
 
-console.log(ENV);
-
 void client.login(ENV.BOT_TOKEN);
