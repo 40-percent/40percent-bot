@@ -1,12 +1,8 @@
-import { config as dotenvConfig } from 'dotenv';
+import config from './config';
+
 import { Message, Client, MessageAttachment, TextChannel } from 'discord.js';
 
-// As early as possible in your application, require and configure dotenv.
-// https://www.npmjs.com/package/dotenv#usage
-dotenvConfig();
-
 const client = new Client();
-const ENV = process.env;
 
 client.on('ready', () => {
   console.log('=== READY ===');
@@ -18,8 +14,8 @@ async function handleMessageAsync(msg: Message) {
     return;
   }
 
-  if (msg.guild?.id === ENV.FORTIES_GUILD) {
-    if (msg.content.includes(ENV.FORTIES_SHOWCASE)) {
+  if (msg.guild?.id === config.FORTIES_GUILD) {
+    if (msg.content.includes(config.FORTIES_SHOWCASE)) {
       if (msg.attachments.size > 0) {
         msg.attachments.map(async (each) => {
           const url = each.proxyURL;
@@ -30,7 +26,7 @@ async function handleMessageAsync(msg: Message) {
           );
 
           const showcaseChannel = (await client.channels.fetch(
-            ENV.FORTIES_SHOWCASE
+            config.FORTIES_SHOWCASE
           )) as TextChannel;
           await showcaseChannel.send(
             `Posted by: ${msg.author.toString()}`,
@@ -39,16 +35,15 @@ async function handleMessageAsync(msg: Message) {
         });
       }
     }
-
-    if (msg.content.includes(ENV.FORTIES_SOUNDTEST)) {
-      const url = msg.content.split(`<#${ENV.FORTIES_SOUNDTEST}> `)[1];
+    if (msg.content.includes(config.FORTIES_SOUNDTEST)) {
+      const url = msg.content.split(`<#${config.FORTIES_SOUNDTEST}> `)[1];
 
       console.log(
         `40s channel posted soundtest: ${msg.author.username} ${url}`
       );
 
       const soundTestChannel = (await client.channels.fetch(
-        ENV.FORTIES_SOUNDTEST
+        config.FORTIES_SOUNDTEST
       )) as TextChannel;
       await soundTestChannel.send(
         `Posted by: ${msg.author.toString()}\n${url}`
@@ -65,4 +60,4 @@ function handleMessageSyncWrapper(msg: Message): void {
 
 client.on('message', handleMessageSyncWrapper);
 
-void client.login(ENV.BOT_TOKEN);
+void client.login(config.BOT_TOKEN);
