@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "discord.js": "^12.4.1",
-    "dotenv": "^8.2.0"
+    "dotenv": "^8.2.0",
+    "slugify": "^1.4.6"
   },
   "devDependencies": {
     "@types/dotenv": "^8.2.0",
