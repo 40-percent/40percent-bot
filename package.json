@@ -4,7 +4,6 @@
   "author": "Natsuki Takahari",
   "description": "A bot for the 40s mechanical keyboard Discord server.",
   "main": "server.js",
-  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "tsc && node build/server.js",
