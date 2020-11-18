@@ -1,11 +1,12 @@
 import config from './config.js';
 import { Message, Client } from 'discord.js';
-import { handleMessage as handleMessageAsync } from './messageHandlers';
+import { handleMessage as handleMessageAsync } from './messageHandlers.js'
+
 
 const client = new Client();
 
 client.on('ready', () => {
-  console.log('==== READY ====');
+  console.log('=== READY ===');
 });
 
 // We use this wrapper because typescript eslint will throw a fit if we return
