@@ -1,8 +1,8 @@
 import config from './config.js';
 import { Message, Client } from 'discord.js';
-import { handleMessage as handleMessageAsync } from './messageHandlers';
+import { handleMessage as handleMessageAsync } from './handlers';
 
-const client = new Client();
+const client = new Client({ partials: ['REACTION'] });
 
 client.on('ready', () => {
   console.log('==== READY ====');
