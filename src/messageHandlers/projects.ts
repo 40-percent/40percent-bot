@@ -26,11 +26,7 @@ function formatIcGbReviewMessage(
   creator: string,
   { name, type, description }: IcGbRequestParams
 ): string {
-  const nameSlug = slugify(name, {
-    lower: true,
-    strict: true,
-    locale: 'en',
-  });
+  const nameSlug = formatSlug(name);
   return `Creator - ${creator}
 ${type} - ${name} - #${nameSlug}
 ${description}`;
@@ -51,11 +47,7 @@ async function handleIcGbRequestMessage(
         Buffer.from(
           JSON.stringify({
             ...requestParams,
-            slug: slugify(requestParams.name, {
-              lower: true,
-              strict: true,
-              locale: 'en',
-            }),
+            slug: formatSlug(requestParams.name),
           })
         ),
         'metadata.json'
@@ -87,6 +79,14 @@ function parseIcGbRequestMessage(msg: Message): IcGbRequestParams {
     }
   }
   throw Error('FormatError');
+}
+
+function formatSlug(projectName: string): string {
+  return slugify(projectName, {
+    lower: true,
+    strict: true,
+    locale: 'en',
+  });
 }
 
 export { handleIcGbRequestMessage };
