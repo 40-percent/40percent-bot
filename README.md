@@ -21,6 +21,9 @@ BOT_TOKEN=your-bot-token-here
 FORTIES_SHOWCASE=your-showcase-channel-id-here
 FORTIES_SOUNDTEST=your-soundtest-channel-id-here
 FORTIES_GUILD=your-server-id-here
+FORTIES_VERIFICATION=your-verification-channel-id-here
+FORTIES_MEMBER_ROLE=your-member-role-id-here
+FORTIES_NEW_ROLE=your-new-user-role-here
 ```
 
 These values will be picked up by the bot application to be able to run correctly.

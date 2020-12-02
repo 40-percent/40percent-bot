@@ -47,10 +47,12 @@ async function handleMessage(msg: Message, client: Client): Promise<void> {
       msg.content?.trim() === "!verify"
     ) {
       const userRoles = msg.member?.roles;
-      const verificationChannel = msg.channel 
+      const verificationChannel = msg.channel;
       if (!userRoles) {
-        await verificationChannel.send(`Roles of ${msg.author.username} could not be retrieved`)
-        return
+        await verificationChannel.send(
+          `Roles of ${msg.author.username} could not be retrieved`
+        );
+        return;
       }
       if (
         userRoles.cache.has(config.FORTIES_NEW_ROLE) &&
@@ -58,9 +60,11 @@ async function handleMessage(msg: Message, client: Client): Promise<void> {
       ) {
         await userRoles.remove(config.FORTIES_NEW_ROLE);
         await userRoles.add(config.FORTIES_MEMBER_ROLE);
-        await msg.delete()
+        await msg.delete();
       } else {
-          await verificationChannel.send(`User ${msg.author.username} is already a member or does not have initial role`)
+        await verificationChannel.send(
+          `User ${msg.author.username} is already a member or does not have initial role`
+        );
       }
     }
   }
