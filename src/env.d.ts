@@ -9,3 +9,4 @@ declare namespace NodeJS {
     FORTIES_NEW_ROLE: string;
   }
 }
+
