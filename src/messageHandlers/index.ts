@@ -2,6 +2,7 @@ import config from '../config';
 import { Message, Client } from 'discord.js';
 import handleShowcaseMessage from './showcase';
 import handleSoundtestMessage from './soundtest';
+import handleBuySellTradeMessage from './buyselltrade';
 import { handleIcGbRequestMessage } from './projects';
 
 async function handleMessage(msg: Message, client: Client): Promise<void> {
@@ -14,6 +15,7 @@ async function handleMessage(msg: Message, client: Client): Promise<void> {
     await handleShowcaseMessage(msg, client);
     await handleSoundtestMessage(msg, client);
     await handleIcGbRequestMessage(msg, client);
+    await handleBuySellTradeMessage(msg, client);
   }
 }
 
