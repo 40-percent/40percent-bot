@@ -7,6 +7,8 @@ declare namespace NodeJS {
     FORTIES_VERIFICATION: string;
     FORTIES_MEMBER_ROLE: string;
     FORTIES_NEW_ROLE: string;
+    IC_GB_REQUEST_CHANNEL: string;
+    IC_GB_REVIEW_CHANNEL: string;
+    IC_GB_ANNOUNCE_CHANNEL: string;
   }
 }
-
