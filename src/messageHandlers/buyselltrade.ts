@@ -38,7 +38,6 @@ class BstPost extends Message {
         await this.delete();
         this.deleted = true;
         await this.warningMessage?.edit(this.warningMessage.content + "**Post was not edited in 30 minutes and was deleted**");
-        //{this.delete().then(() => this.warningMessage?.edit(this.warningMessage.content + "/n **Post was not edited in 30 minutes and was deleted**"));
     }
     clearMessageExpiration() {
         if (this.expiration)
@@ -65,8 +64,10 @@ async function validateBstMessage(bstPost: BstPost) {
     if (bstPost.validationMessages.length) {
         await handleFailedBstValidation(bstPost);
     }
-    // if this isn't a messages first time through the system, clear the delete timer
-    bstPost.clearMessageExpiration();
+    if (bstPost.warningMessage) {
+        // if this isn't a messages first time through the system, clear the delete timer
+        bstPost.clearMessageExpiration();
+    }
 }
 
 async function handleFailedBstValidation(bstPost: BstPost) {
@@ -84,7 +85,7 @@ async function handleFailedBstValidation(bstPost: BstPost) {
 function runDeleteCountDown(bstPost: BstPost) {
     // start a delete timeout for 30 minutes 
     bstPost.setMessageExpiration(1000 * 60 * 30);
-    // check message every 10 seconds
+    // check message in 10 seconds
     const interval: NodeJS.Timeout = setInterval(() => checkForEdit(bstPost, interval), 1000 * 10);
 }
 
