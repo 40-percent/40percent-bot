@@ -58,7 +58,7 @@ async function handleReaction(
 
   // Assume the user is no longer partial since we handled that above
   if (reaction.message.guild?.id === config.FORTIES_GUILD) {
-    await handleIcGbReviewReaction(reaction, client);
+    await handleIcGbReviewReaction(reaction, client, user as User);
     await handleProjectAnnouncementReaction(reaction, user as User);
   }
 }

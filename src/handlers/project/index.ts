@@ -53,7 +53,8 @@ async function handleIcGbRequestMessage(
 
 async function handleIcGbReviewReaction(
   reaction: MessageReaction,
-  client: Client
+  client: Client,
+  reviewer: User
 ): Promise<void> {
   // Only handle reactions in the IC/GB review channel
   if (
@@ -77,7 +78,7 @@ async function handleIcGbReviewReaction(
   const guild = reaction.message.guild as Guild;
   const validParams = await ReviewParams.validate(reviewParams, guild);
   if (validParams) {
-    await CreateProject.boilerplate(reviewParams, guild, client);
+    await CreateProject.boilerplate(reviewParams, guild, reviewer, client);
   } else {
     await reviewChannel.send('Role or channel already exists.');
   }

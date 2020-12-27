@@ -8,6 +8,7 @@ import {
   OverwriteResolvable,
   Snowflake,
   MessageAttachment,
+  User,
 } from 'discord.js';
 import AnnouncementParams from './announcementParams';
 import { ProjectAnnouncementParams } from './announcementParams';
@@ -15,9 +16,15 @@ import { ProjectAnnouncementParams } from './announcementParams';
 async function generateProjectBoilerplate(
   reviewParams: ProjectReviewParams,
   guild: Guild,
+  reviewer: User,
   client: Client
 ): Promise<void> {
-  const role = await createProjectRole(reviewParams.name, guild);
+  const role = await createProjectRole(
+    reviewParams.name,
+    guild,
+    reviewer.id,
+    client
+  );
   const channel = await createProjectChannel(reviewParams, guild, role);
   const projectAnnouncementParams = AnnouncementParams.generate(
     reviewParams.ownerId,
@@ -33,14 +40,25 @@ async function generateProjectBoilerplate(
 
 async function createProjectRole(
   roleName: string,
-  guild: Guild
+  guild: Guild,
+  reviewerId: string,
+  client: Client
 ): Promise<Role> {
-  return guild.roles.create({
+  // First create the role
+  const role = await guild.roles.create({
     data: {
       name: roleName,
       mentionable: true,
     },
   });
+  // Then create the rank for manual add/removal
+  const botCommandsChannel = (await client.channels.fetch(
+    config.BOT_COMMANDS_CHANNEL
+  )) as TextChannel;
+  await botCommandsChannel.send(
+    `<@${reviewerId}> please enter \`?addrank ${roleName}\` to create the project rank`
+  );
+  return role;
 }
 
 async function createProjectChannel(
@@ -54,7 +72,8 @@ async function createProjectChannel(
     permissionOverwrites: getProjectChannelPermissions(
       guild,
       role.id,
-      reviewParams.ownerId
+      reviewParams.ownerId,
+      reviewParams.type
     ),
   });
 }
@@ -62,35 +81,52 @@ async function createProjectChannel(
 function getProjectChannelPermissions(
   guild: Guild,
   roleId: Snowflake,
-  ownerId: Snowflake
+  ownerId: Snowflake,
+  projectType: string
 ): OverwriteResolvable[] {
-  return [
-    // disallow everyone from seeing the channel by default
-    {
-      id: guild.roles.everyone.id,
-      deny: ['VIEW_CHANNEL'],
-    },
-    // allow role members to read and send messages
-    {
-      id: roleId,
-      allow: ['VIEW_CHANNEL'],
-    },
-    // allow wallet destroyer members to read and send messages
-    {
-      id: config.WALLET_DESTROYER_ROLE,
-      allow: ['VIEW_CHANNEL'],
-    },
-    // make the owner a project-channel level mod
-    {
-      id: ownerId,
-      allow: [
-        'MANAGE_CHANNELS',
-        'SEND_MESSAGES',
-        'VIEW_CHANNEL',
-        'MANAGE_MESSAGES',
-      ],
-    },
-  ];
+  if (projectType === 'IC') {
+    return [
+      // disallow everyone from seeing the channel by default
+      {
+        id: guild.roles.everyone.id,
+        deny: ['VIEW_CHANNEL'],
+      },
+      // allow role members to read and send messages
+      {
+        id: roleId,
+        allow: ['VIEW_CHANNEL'],
+      },
+      // allow wallet destroyer members to read and send messages
+      {
+        id: config.WALLET_DESTROYER_ROLE,
+        allow: ['VIEW_CHANNEL'],
+      },
+      // make the owner a project-channel level mod
+      {
+        id: ownerId,
+        allow: [
+          'MANAGE_CHANNELS',
+          'SEND_MESSAGES',
+          'VIEW_CHANNEL',
+          'MANAGE_MESSAGES',
+        ],
+      },
+    ];
+  } else {
+    //if (projectType === 'GB')
+    return [
+      // make the owner a project-channel level mod
+      {
+        id: ownerId,
+        allow: [
+          'MANAGE_CHANNELS',
+          'SEND_MESSAGES',
+          'VIEW_CHANNEL',
+          'MANAGE_MESSAGES',
+        ],
+      },
+    ];
+  }
 }
 
 async function announceProject(
