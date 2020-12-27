@@ -30,11 +30,9 @@ class BstPost extends Message {
         this.validationMessages.push(errText);
     }
     setMessageExpiration(timeInMs: number) {
-        //this.expiration = 
         setTimeout(this.deleteMessage.bind(this), timeInMs);
     }
     async deleteMessage() {
-
         await this.delete();
         this.deleted = true;
         await this.warningMessage?.edit(this.warningMessage.content + "**Post was not edited in 30 minutes and was deleted**");
