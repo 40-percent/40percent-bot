@@ -75,14 +75,14 @@ async function handleFailedBstValidation(bstPost: BstPost) {
     // https://stackoverflow.com/questions/53563862/send-message-to-specific-channel-with-typescript/53565548
     if (!((channel): channel is TextChannel => channel?.type === 'text')(channel)) return;
 
-    bstPost.warningMessage = await channel.send(createEmbededFailMessage(bstPost));
+    bstPost.warningMessage = await channel.send(createFailMessage(bstPost));
 
     runDeleteCountDown(bstPost);
 }
 
 function runDeleteCountDown(bstPost: BstPost) {
     // start a delete timeout for 30 minutes 
-    bstPost.setMessageExpiration(1000 * 60 * 30);
+    bstPost.setMessageExpiration(1000);
     // check message in 10 seconds
     const interval: NodeJS.Timeout = setInterval(() => checkForEdit(bstPost, interval), 1000 * 10);
 }
@@ -101,27 +101,17 @@ function checkForEdit(bstPost: BstPost, interval: NodeJS.Timeout) {
         });
 }
 
-function createEmbededFailMessage(post: BstPost): MessageEmbed {
-    const embed = {
-        "description": `${post.author}
-        
-        Your post does not meet the requirements for posting in Buy/Sell/Trade.
-        
-        Please edit your message to correct the following errors **in the next 30 minutes** or your post will be deleted:
-        
-        ${post.validationMessages.map(x => "• " + x + "\n").join("").toString()}
-        
-        `,
-        "color": 12729122,
-        "fields": [
-            {
-                "name": "Original Mesasge Content",
-                "value": `${post.content}`
-            }
-        ]
-    };
+function createFailMessage(post: BstPost): string {
+    return `${post.author}, your post does not meet the requirements for posting in Buy/Sell/Trade.
 
-    return new MessageEmbed(embed);
+Please edit your message to correct the following errors ***in the next 30 minutes*** or your post will be deleted:
+
+    ${post.validationMessages.map(x => "• " + x + "\n").join("").toString()}
+**Original Message:**
+\`\`\`
+${post.content}
+\`\`\`
+`;
 }
 
 function validateLocationBlockExistance(post: BstPost): boolean {
