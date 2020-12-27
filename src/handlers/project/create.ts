@@ -8,6 +8,7 @@ import {
   OverwriteResolvable,
   Snowflake,
   MessageAttachment,
+  User,
 } from 'discord.js';
 import AnnouncementParams from './announcementParams';
 import { ProjectAnnouncementParams } from './announcementParams';
@@ -15,9 +16,15 @@ import { ProjectAnnouncementParams } from './announcementParams';
 async function generateProjectBoilerplate(
   reviewParams: ProjectReviewParams,
   guild: Guild,
+  reviewer: User,
   client: Client
 ): Promise<void> {
-  const role = await createProjectRole(reviewParams.name, guild, client);
+  const role = await createProjectRole(
+    reviewParams.name,
+    guild,
+    reviewer.id,
+    client
+  );
   const channel = await createProjectChannel(reviewParams, guild, role);
   const projectAnnouncementParams = AnnouncementParams.generate(
     reviewParams.ownerId,
@@ -34,6 +41,7 @@ async function generateProjectBoilerplate(
 async function createProjectRole(
   roleName: string,
   guild: Guild,
+  reviewerId: string,
   client: Client
 ): Promise<Role> {
   // First create the role
@@ -47,7 +55,9 @@ async function createProjectRole(
   const botCommandsChannel = (await client.channels.fetch(
     config.BOT_COMMANDS_CHANNEL
   )) as TextChannel;
-  await botCommandsChannel.send(`?addrank ${roleName}`);
+  await botCommandsChannel.send(
+    `<@${reviewerId}> please enter \`?addrank ${roleName}\` to create the project rank`
+  );
   return role;
 }
 
