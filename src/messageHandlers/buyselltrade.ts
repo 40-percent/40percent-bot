@@ -82,7 +82,7 @@ async function handleFailedBstValidation(bstPost: BstPost) {
 
 function runDeleteCountDown(bstPost: BstPost) {
     // start a delete timeout for 30 minutes 
-    bstPost.setMessageExpiration(1000);
+    bstPost.setMessageExpiration(1000 * 60 * 30);
     // check message in 10 seconds
     const interval: NodeJS.Timeout = setInterval(() => checkForEdit(bstPost, interval), 1000 * 10);
 }
