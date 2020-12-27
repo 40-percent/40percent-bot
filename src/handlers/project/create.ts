@@ -54,7 +54,8 @@ async function createProjectChannel(
     permissionOverwrites: getProjectChannelPermissions(
       guild,
       role.id,
-      reviewParams.ownerId
+      reviewParams.ownerId,
+      reviewParams.type
     ),
   });
 }
@@ -62,35 +63,52 @@ async function createProjectChannel(
 function getProjectChannelPermissions(
   guild: Guild,
   roleId: Snowflake,
-  ownerId: Snowflake
+  ownerId: Snowflake,
+  projectType: string
 ): OverwriteResolvable[] {
-  return [
-    // disallow everyone from seeing the channel by default
-    {
-      id: guild.roles.everyone.id,
-      deny: ['VIEW_CHANNEL'],
-    },
-    // allow role members to read and send messages
-    {
-      id: roleId,
-      allow: ['VIEW_CHANNEL'],
-    },
-    // allow wallet destroyer members to read and send messages
-    {
-      id: config.WALLET_DESTROYER_ROLE,
-      allow: ['VIEW_CHANNEL'],
-    },
-    // make the owner a project-channel level mod
-    {
-      id: ownerId,
-      allow: [
-        'MANAGE_CHANNELS',
-        'SEND_MESSAGES',
-        'VIEW_CHANNEL',
-        'MANAGE_MESSAGES',
-      ],
-    },
-  ];
+  if (projectType === 'IC') {
+    return [
+      // disallow everyone from seeing the channel by default
+      {
+        id: guild.roles.everyone.id,
+        deny: ['VIEW_CHANNEL'],
+      },
+      // allow role members to read and send messages
+      {
+        id: roleId,
+        allow: ['VIEW_CHANNEL'],
+      },
+      // allow wallet destroyer members to read and send messages
+      {
+        id: config.WALLET_DESTROYER_ROLE,
+        allow: ['VIEW_CHANNEL'],
+      },
+      // make the owner a project-channel level mod
+      {
+        id: ownerId,
+        allow: [
+          'MANAGE_CHANNELS',
+          'SEND_MESSAGES',
+          'VIEW_CHANNEL',
+          'MANAGE_MESSAGES',
+        ],
+      },
+    ];
+  } else {
+    //if (projectType === 'GB')
+    return [
+      // make the owner a project-channel level mod
+      {
+        id: ownerId,
+        allow: [
+          'MANAGE_CHANNELS',
+          'SEND_MESSAGES',
+          'VIEW_CHANNEL',
+          'MANAGE_MESSAGES',
+        ],
+      },
+    ];
+  }
 }
 
 async function announceProject(
