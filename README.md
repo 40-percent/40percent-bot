@@ -27,6 +27,7 @@ IC_GB_ANNOUNCE_CHANNEL=etc
 IC_CATEGORY=etc
 GB_CATEGORY=etc
 WALLET_DESTROYER_ROLE=etc
+BOT_COMMANDS_CHANNEL=etc
 ```
 
 These values will be picked up by the bot application to be able to run correctly.

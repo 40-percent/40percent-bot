@@ -10,5 +10,6 @@ declare namespace NodeJS {
     IC_CATEGORY: string;
     GB_CATEGORY: string;
     WALLET_DESTROYER_ROLE: string;
+    BOT_COMMANDS_CHANNEL: string;
   }
 }

@@ -17,7 +17,7 @@ async function generateProjectBoilerplate(
   guild: Guild,
   client: Client
 ): Promise<void> {
-  const role = await createProjectRole(reviewParams.name, guild);
+  const role = await createProjectRole(reviewParams.name, guild, client);
   const channel = await createProjectChannel(reviewParams, guild, role);
   const projectAnnouncementParams = AnnouncementParams.generate(
     reviewParams.ownerId,
@@ -33,14 +33,22 @@ async function generateProjectBoilerplate(
 
 async function createProjectRole(
   roleName: string,
-  guild: Guild
+  guild: Guild,
+  client: Client
 ): Promise<Role> {
-  return guild.roles.create({
+  // First create the role
+  const role = await guild.roles.create({
     data: {
       name: roleName,
       mentionable: true,
     },
   });
+  // Then create the rank for manual add/removal
+  const botCommandsChannel = (await client.channels.fetch(
+    config.BOT_COMMANDS_CHANNEL
+  )) as TextChannel;
+  await botCommandsChannel.send(`?addrank ${roleName}`);
+  return role;
 }
 
 async function createProjectChannel(
