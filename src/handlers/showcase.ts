@@ -20,7 +20,7 @@ export default async function handleShowcaseMessage(
           `40s channel posted showcase: ${msg.author.username} ${url}`
         );
         await showcaseChannel.send(
-          `Posted by: ${msg.author.toString()}`,
+          `Posted by: ${msg.author.toString()}\nOP: ${msg.url}`,
           attachment
         );
         return;
