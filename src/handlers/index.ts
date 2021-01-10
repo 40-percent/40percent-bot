@@ -8,11 +8,13 @@ import {
 } from 'discord.js';
 import handleShowcaseMessage from './showcase';
 import handleSoundtestMessage from './soundtest';
+import handleBuySellTradeMessage from './buyselltrade';
 import {
   handleIcGbRequestMessage,
   handleIcGbReviewReaction,
   handleProjectAnnouncementReaction,
 } from './project';
+
 
 async function handleMessage(msg: Message, client: Client): Promise<void> {
   // Ignore messages from bots.
@@ -24,6 +26,7 @@ async function handleMessage(msg: Message, client: Client): Promise<void> {
     await handleShowcaseMessage(msg, client);
     await handleSoundtestMessage(msg, client);
     await handleIcGbRequestMessage(msg, client);
+    await handleBuySellTradeMessage(msg, client);
   }
 }
 

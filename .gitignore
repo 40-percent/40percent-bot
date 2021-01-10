@@ -1,4 +1,7 @@
 .env
 node_modules/
 build
+.vscode/
 .eslintcache
+package-lock.json
+package.json
