@@ -1,0 +1,4 @@
+{
+  "extends": ["@commitlint/config-conventional"],
+  "scope-enum": ["project", "showcase", "soundtest"]
+}

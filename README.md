@@ -42,3 +42,16 @@ Once you have the bot authorized into your Discord server, you can run
 `npm run start`
 
 to compile and execute the bot script.
+
+## Contributing
+
+We absolultely love getting new contributors to this project.
+Following a few guidelines will make it much easier to review and merge your PR.
+
+1. Before committing please ensure that your code passes all type, linting, and style checks (in addition to compiling of course).
+2. Make sure you've at least run through the Setup process tested all the related functionality on a server you moderate.
+3. We use [commitlint](https://github.com/conventional-changelog/commitlint) to enforce a standard commit message format.
+   It's also recommended that you follow some [best practices](https://chris.beams.io/posts/git-commit/) for writing a multi-line commit message to explain the changes you made in detail.
+   Be sure to add a [reference to the issue](https://docs.github.com/en/free-pro-team@latest/github/managing-your-work-on-github/linking-a-pull-request-to-an-issue) you're addressing on the last line of your commit message.
+   If there's no issue created, please create one first so the changes can be tracked in the repo.
+   If you're adding a new feature, make sure you add a new `scope` in the file `.commitlintrc.json`.
