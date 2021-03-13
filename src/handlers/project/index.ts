@@ -34,7 +34,7 @@ async function handleIcGbRequestMessage(
 ): Promise<void> {
   if (msg.channel.id == config.IC_GB_REQUEST_CHANNEL) {
     try {
-      const requestParams = await RequestParams.parse(msg, client);
+      const requestParams = await RequestParams.parse(msg);
       const reviewParams = ReviewParams.fromRequestParams(requestParams);
       const reviewMessage = formatIcGbReviewMessage(reviewParams);
       const serializedParams = ReviewParams.serialize(reviewParams);
