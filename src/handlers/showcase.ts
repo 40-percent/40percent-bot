@@ -1,4 +1,4 @@
-import { Message, Client, MessageAttachment, TextChannel } from 'discord.js';
+import { Message, Client, TextChannel, MessageEmbed } from 'discord.js';
 import config from '../config';
 
 export default async function handleShowcaseMessage(
@@ -15,14 +15,24 @@ export default async function handleShowcaseMessage(
     await Promise.all(
       msg.attachments.map(async (each) => {
         const url = each.proxyURL;
-        const attachment = new MessageAttachment(url);
         console.log(
           `40s channel posted showcase: ${msg.author.username} ${url}`
         );
-        await showcaseChannel.send(
-          `Posted by: ${msg.author.toString()}\nOP: ${msg.url}`,
-          attachment
-        );
+        const embed = new MessageEmbed()
+          .setAuthor(
+            msg.author.username,
+            msg.author.avatarURL() ?? msg.author.defaultAvatarURL
+          )
+          .setDescription(
+            msg.content.replace(
+              new RegExp(`^<#${config.FORTIES_SHOWCASE}>\\s*`),
+              ''
+            )
+          )
+          .addField('Original Message', `[🔗](${msg.url})`)
+          .setTimestamp()
+          .setImage(url);
+        await showcaseChannel.send(embed);
         return;
       })
     );
