@@ -40,7 +40,7 @@ async function parse(msg: Message): Promise<ProjectRequestParams> {
       );
     if (attachmentUrls.length !== 1)
       errors.push(
-        `Request must have exactly one image attached. Your request had ${attachmentUrls.length} attachments.`
+        `Request must have exactly one image attached (not a URL). Your request had ${attachmentUrls.length} attachments.`
       );
 
     if (errors.length === 0) {
@@ -64,7 +64,7 @@ async function parse(msg: Message): Promise<ProjectRequestParams> {
     - Line one: "IC" (Interest Check) or "GB" (Group Buy)
     - Line two: Project name (less than 32 characters)
     - Line three+: Project description (up to 1000 characters and/or up to 12 lines)
-    - Must include exactly one attachment to be used with the announcement
+    - Must include exactly one image attachment (not a URL) to be used with the announcement
   `;
   await msg.reply(requestErrorMessage);
   throw Error('FormatError');
