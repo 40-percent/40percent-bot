@@ -45,6 +45,7 @@ async function handleIcGbRequestMessage(
         new MessageAttachment(requestParams.imageUrl),
         serializedParams,
       ]);
+      await msg.reply('your request was successfully submitted for review.');
     } catch (error) {
       return;
     }
