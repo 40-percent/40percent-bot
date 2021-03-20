@@ -13,10 +13,8 @@ export default async function handleShowcaseMessage(
       config.FORTIES_SHOWCASE
     )) as TextChannel;
 
-    const url = msg.attachments.first()?.proxyURL as string
-    console.log(
-      `40s channel posted showcase: ${msg.author.username} ${url}`
-    );
+    const url = msg.attachments.first()?.proxyURL as string;
+    console.log(`40s channel posted showcase: ${msg.author.username} ${url}`);
 
     const embed = new MessageEmbed()
       .setAuthor(
@@ -24,14 +22,15 @@ export default async function handleShowcaseMessage(
         msg.author.avatarURL() ?? msg.author.defaultAvatarURL
       )
       .setDescription(
-        msg.content.replace(
-          `<#${config.FORTIES_SHOWCASE}>`,
-          ''
-        ).trim().substring(0, 512)
+        msg.content
+          .replace(`<#${config.FORTIES_SHOWCASE}>`, '')
+          .trim()
+          .substring(0, 512)
       )
       .addField('Original Message', `[Jump 🔗](${msg.url})`, true)
-      .setTimestamp()
-      .setImage(url);
+      .setImage(url)
+      .setFooter(`#${(msg.channel as TextChannel).name}`)
+      .setTimestamp();
 
     await showcaseChannel.send(embed);
     return;
