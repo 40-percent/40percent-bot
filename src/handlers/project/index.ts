@@ -98,7 +98,8 @@ async function handleIcGbReviewReaction(
 
 async function handleProjectAnnouncementReaction(
   reaction: MessageReaction,
-  user: User
+  user: User,
+  action: 'add' | 'remove'
 ): Promise<void> {
   // Only handle reactions in the IC/GB review channel
   if (reaction.message.channel.id !== config.IC_GB_ANNOUNCE_CHANNEL) {
@@ -115,7 +116,17 @@ async function handleProjectAnnouncementReaction(
     const projectParams = response.data;
     const guild = reaction.message.guild as Guild;
     const member = await guild.members.fetch(user.id);
-    await member.roles.add(projectParams.roleId);
+
+    switch (action) {
+      case 'add': {
+        await member.roles.add(projectParams.roleId);
+        break;
+      }
+      case 'remove': {
+        await member.roles.remove(projectParams.roleId);
+        break;
+      }
+    }
   }
 }
 
