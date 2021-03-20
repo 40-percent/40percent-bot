@@ -14,7 +14,21 @@ export default async function handleShowcaseMessage(
     )) as TextChannel;
 
     const url = msg.attachments.first()?.proxyURL as string;
-    console.log(`40s channel posted showcase: ${msg.author.username} ${url}`);
+
+    if (!url) {
+      console.log('Missing showcase image:');
+      console.log({
+        author: msg.author.tag,
+        message_url: msg.url,
+      });
+      console.log('\n');
+
+      await msg.reply(
+        "something went wrong. We'll take a look, but in the meantime please ensure an image is attached and try again."
+      );
+
+      return;
+    }
 
     const embed = new MessageEmbed()
       .setAuthor(
@@ -32,7 +46,16 @@ export default async function handleShowcaseMessage(
       .setFooter(`#${(msg.channel as TextChannel).name}`)
       .setTimestamp();
 
-    await showcaseChannel.send(embed);
+    const embedMessage = await showcaseChannel.send(embed);
+
+    console.log('40s channel posted showcase:');
+    console.log({
+      author: msg.author.tag,
+      image_url: url,
+      message_url: embedMessage.url,
+    });
+    console.log('\n');
+
     return;
   }
 }
