@@ -23,10 +23,16 @@ function formatIcGbReviewMessage({
   slug,
   ownerId,
 }: ProjectReviewParams): string {
+  const creator = `<@${ownerId}>`;
   return endent`
-    Creator - <@${ownerId}>
-    ${type} - ${name} - #${slug}
-    ${description}
+    Creator:
+      - ${creator}
+    Details:
+      - Type: ${type}
+      - Name: ${name}
+      - Channel: #${slug}
+    Description:
+      - ${description}
   `;
 }
 
