@@ -53,7 +53,7 @@ async function parse(msg: Message): Promise<ProjectRequestParams> {
         imageUrl: attachmentUrls[0],
       };
     } else {
-      let errorMessage = `your request had the following issues:`;
+      let errorMessage = 'your request had the following issues:';
       for (const error of errors) {
         errorMessage += `\n  ${error}`;
       }

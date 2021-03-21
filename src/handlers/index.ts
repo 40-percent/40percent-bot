@@ -1,4 +1,3 @@
-import config from '../config';
 import {
   Message,
   Client,
@@ -6,6 +5,8 @@ import {
   User,
   PartialUser,
 } from 'discord.js';
+import endent from 'endent';
+import config from '../config';
 import handleShowcaseMessage from './showcase';
 import handleSoundtestMessage from './soundtest';
 import {
@@ -36,7 +37,10 @@ async function handleReaction(
     try {
       await user.fetch();
     } catch (error) {
-      console.log('Something went wrong fetching the reaction:', error);
+      console.log(endent`
+        Something went wrong fetching the reaction:
+          - ${error}
+      `);
       return;
     }
   }
@@ -51,7 +55,10 @@ async function handleReaction(
     try {
       await reaction.fetch();
     } catch (error) {
-      console.log('Something went wrong fetching the reaction:', error);
+      console.log(endent`
+        Something went wrong fetching the reaction:
+          - ${error}
+      `);
       return;
     }
   }
