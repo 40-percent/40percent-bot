@@ -56,8 +56,9 @@ async function createProjectRole(
   const botCommandsChannel = (await client.channels.fetch(
     config.BOT_COMMANDS_CHANNEL
   )) as TextChannel;
+  const reviewer = `<@${reviewerId}>`;
   await botCommandsChannel.send(endent`
-    <@${reviewerId}> please enter \`?addrank ${roleName}\` to create the project rank, and remember to organize channels by alphabetical order
+    ${reviewer}, please enter \`?addrank ${roleName}\` to create the project rank and remember to organize channels by alphabetical order.
   `);
   return role;
 }
@@ -142,13 +143,16 @@ async function announceProject(
   const serializedParams = AnnouncementParams.serialize(
     projectAnnouncementParams
   );
+  const reviewer = `<@${reviewParams.ownerId}>`;
+  const channelName = `<#${channel.id}>`;
+  const roleName = `<@&${projectAnnouncementParams.roleId}>`;
   await announceChannel.send(
     endent`
-      Announcing the ${reviewParams.type} for ${reviewParams.name} by <@${reviewParams.ownerId}>!
+      Announcing the ${reviewParams.type} for ${reviewParams.name} by ${reviewer}!
 
       ${reviewParams.description}
 
-      To gain access to the project channel <#${channel.id}>, join the role <@&${projectAnnouncementParams.roleId}> by reacting to this announcement with :white_check_mark:!
+      To gain access to the project channel ${channelName}, join the role ${roleName} by reacting to this announcement with :white_check_mark:!
     `,
     [new MessageAttachment(reviewParams.imageUrl), serializedParams]
   );
