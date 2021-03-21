@@ -1,5 +1,3 @@
-import config from '../../config';
-import { ProjectReviewParams } from './reviewParams';
 import {
   Client,
   TextChannel,
@@ -10,6 +8,9 @@ import {
   MessageAttachment,
   User,
 } from 'discord.js';
+import endent from 'endent';
+import config from '../../config';
+import { ProjectReviewParams } from './reviewParams';
 import AnnouncementParams from './announcementParams';
 import { ProjectAnnouncementParams } from './announcementParams';
 
@@ -55,9 +56,9 @@ async function createProjectRole(
   const botCommandsChannel = (await client.channels.fetch(
     config.BOT_COMMANDS_CHANNEL
   )) as TextChannel;
-  await botCommandsChannel.send(
-    `<@${reviewerId}> please enter \`?addrank ${roleName}\` to create the project rank, and remember to organize channels by alphabetical order`
-  );
+  await botCommandsChannel.send(endent`
+    <@${reviewerId}> please enter \`?addrank ${roleName}\` to create the project rank, and remember to organize channels by alphabetical order
+  `);
   return role;
 }
 
@@ -142,9 +143,13 @@ async function announceProject(
     projectAnnouncementParams
   );
   await announceChannel.send(
-    `Announcing the ${reviewParams.type} for ${reviewParams.name} by <@${reviewParams.ownerId}>!
-${reviewParams.description}
-To gain access to the project channel <#${channel.id}>, join the role <@&${projectAnnouncementParams.roleId}> by reacting to this announcement with :white_check_mark:!`,
+    endent`
+      Announcing the ${reviewParams.type} for ${reviewParams.name} by <@${reviewParams.ownerId}>!
+
+      ${reviewParams.description}
+
+      To gain access to the project channel <#${channel.id}>, join the role <@&${projectAnnouncementParams.roleId}> by reacting to this announcement with :white_check_mark:!
+    `,
     [new MessageAttachment(reviewParams.imageUrl), serializedParams]
   );
   // TODO: when a user reacts to the announcement, give them the role
