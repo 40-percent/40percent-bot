@@ -1,4 +1,3 @@
-import config from '../../config';
 import {
   Message,
   Client,
@@ -8,13 +7,14 @@ import {
   Guild,
   MessageAttachment,
 } from 'discord.js';
+import axios from 'axios';
+import endent from 'endent';
+import config from '../../config';
 import { ProjectAnnouncementParams } from './announcementParams';
 import { ProjectReviewParams } from './reviewParams';
 import ReviewParams from './reviewParams';
 import RequestParams from './requestParams';
 import CreateProject from './create';
-
-import axios from 'axios';
 
 function formatIcGbReviewMessage({
   name,
@@ -23,9 +23,11 @@ function formatIcGbReviewMessage({
   slug,
   ownerId,
 }: ProjectReviewParams): string {
-  return `Creator - <@${ownerId}>
-${type} - ${name} - #${slug}
-${description}`;
+  return endent`
+    Creator - <@${ownerId}>
+    ${type} - ${name} - #${slug}
+    ${description}
+  `;
 }
 
 async function handleIcGbRequestMessage(
@@ -82,18 +84,6 @@ async function handleIcGbReviewReaction(
   } else {
     await reviewChannel.send('Role or channel already exists.');
   }
-  // console.log(attachmentUrls);
-  // await Promise.all(
-  //   attachmentUrls.map(async (url) => {
-  //     const response = await axios.get<ProjectParams>(url);
-  //     const responseData = response.data;
-  //     console.log(responseData);
-  //     await announceChannel.send(
-  //       `message had attachment`,
-  //       new MessageAttachment(url)
-  //     );
-  //   })
-  // );
 }
 
 async function handleProjectAnnouncementReaction(
