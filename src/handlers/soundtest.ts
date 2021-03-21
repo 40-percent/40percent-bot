@@ -1,4 +1,5 @@
 import { Message, MessageAttachment, Client, TextChannel } from 'discord.js';
+import endent from 'endent';
 import config from '../config';
 import containsValidUrl from '../utils/containsValidUrl';
 
@@ -22,9 +23,11 @@ export default async function handleSoundtestMessage(
     if (validUrlPresent || !!attachmentUrl) {
       let messageToSend = `Posted by: ${msg.author.toString()}`;
       if (filteredUserInput) messageToSend += `\n${filteredUserInput}`;
-      console.log(
-        `40s channel posted soundtest: ${msg.author.username} ${filteredUserInput}`
-      );
+      console.log(endent`
+        40s channel posted soundtest:
+          - Author: ${msg.author.username}
+          - Message: ${filteredUserInput ?? 'N/A'}
+      `);
       if (attachmentUrl) {
         const attachment = new MessageAttachment(attachmentUrl);
         await soundTestChannel.send(messageToSend, attachment);
@@ -33,7 +36,7 @@ export default async function handleSoundtestMessage(
       }
     } else {
       await msg.reply(
-        'sound tests must contain a valid url and/or attachment.'
+        'sound tests must contain a valid URL and/or attachment.'
       );
     }
   }
