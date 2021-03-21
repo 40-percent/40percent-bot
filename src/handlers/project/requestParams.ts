@@ -12,7 +12,7 @@ type ProjectRequestParams = {
 async function parse(msg: Message): Promise<ProjectRequestParams> {
   const lines = msg.content.split('\n');
 
-  if (lines.length >= 3) {
+  if (lines.length >= 3 && msg.attachments.size === 1) {
     const errors = [];
     const type = lines[0].trim().toUpperCase();
     const name = lines[1].trim();
