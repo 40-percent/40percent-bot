@@ -46,6 +46,7 @@ async function handleIcGbRequestMessage(
         serializedParams,
       ]));
       await message.react('✅');
+      await msg.reply('your request was successfully submitted for review.');
     } catch (error) {
       return;
     }
