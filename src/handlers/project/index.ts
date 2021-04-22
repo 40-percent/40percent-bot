@@ -41,10 +41,11 @@ async function handleIcGbRequestMessage(
       const reviewChannel = (await client.channels.fetch(
         config.IC_GB_REVIEW_CHANNEL
       )) as TextChannel;
-      await reviewChannel.send(reviewMessage, [
+      const message = (await reviewChannel.send(reviewMessage, [
         new MessageAttachment(requestParams.imageUrl),
         serializedParams,
-      ]);
+      ]));
+      await message.react('✅');
       await msg.reply('your request was successfully submitted for review.');
     } catch (error) {
       return;
@@ -99,7 +100,8 @@ async function handleIcGbReviewReaction(
 
 async function handleProjectAnnouncementReaction(
   reaction: MessageReaction,
-  user: User
+  user: User,
+  action: 'add' | 'remove'
 ): Promise<void> {
   // Only handle reactions in the IC/GB review channel
   if (reaction.message.channel.id !== config.IC_GB_ANNOUNCE_CHANNEL) {
@@ -116,7 +118,17 @@ async function handleProjectAnnouncementReaction(
     const projectParams = response.data;
     const guild = reaction.message.guild as Guild;
     const member = await guild.members.fetch(user.id);
-    await member.roles.add(projectParams.roleId);
+
+    switch (action) {
+      case 'add': {
+        await member.roles.add(projectParams.roleId);
+        break;
+      }
+      case 'remove': {
+        await member.roles.remove(projectParams.roleId);
+        break;
+      }
+    }
   }
 }
 

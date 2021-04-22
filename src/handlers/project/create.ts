@@ -141,14 +141,13 @@ async function announceProject(
   const serializedParams = AnnouncementParams.serialize(
     projectAnnouncementParams
   );
-  await announceChannel.send(
+  const msg = await announceChannel.send(
     `Announcing the ${reviewParams.type} for ${reviewParams.name} by <@${reviewParams.ownerId}>!
 ${reviewParams.description}
 To gain access to the project channel <#${channel.id}>, join the role <@&${projectAnnouncementParams.roleId}> by reacting to this announcement with :white_check_mark:!`,
     [new MessageAttachment(reviewParams.imageUrl), serializedParams]
   );
-  // TODO: when a user reacts to the announcement, give them the role
-  // :white_check_mark: for accept :eyes: for gb role
+  await msg.react('✅');
 }
 
 export default {

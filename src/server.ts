@@ -18,22 +18,29 @@ client.on('ready', () => {
 });
 
 // We use these wrappers because typescript eslint will throw a fit if we return
-//  and unresolved promise instead of void in the client handlers.
+//  an unresolved promise instead of void in the client handlers.
 function handleMessageSyncWrapper(msg: Message): void {
   void handleMessageAsync(msg, client);
 }
 
 // We use these wrappers because typescript eslint will throw a fit if we return
-//  and unresolved promise instead of void in the client handlers.
+//  an unresolved promise instead of void in the client handlers.
 function handleReactionSyncWrapper(
   reaction: MessageReaction,
-  user: User | PartialUser
+  user: User | PartialUser,
+  action: 'add' | 'remove'
 ): void {
-  void handleReactionAsync(reaction, user, client);
+  void handleReactionAsync(reaction, user, action, client);
 }
 
 client.on('message', handleMessageSyncWrapper);
 
-client.on('messageReactionAdd', handleReactionSyncWrapper);
+client.on('messageReactionAdd', (messageReaction, user) =>
+  handleReactionSyncWrapper(messageReaction, user, 'add')
+);
+
+client.on('messageReactionRemove', (messageReaction, user) =>
+  handleReactionSyncWrapper(messageReaction, user, 'remove')
+);
 
 void client.login(config.BOT_TOKEN);
