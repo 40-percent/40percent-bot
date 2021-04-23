@@ -13,7 +13,7 @@ export default async function handleShowcaseMessage(
       config.FORTIES_SHOWCASE
     )) as TextChannel;
 
-    const url = msg.attachments.first()?.proxyURL as string;
+    const url = msg.attachments.first()?.url as string;
 
     if (!url) {
       console.log('Missing showcase image:', {
