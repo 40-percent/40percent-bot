@@ -30,6 +30,7 @@ async function handleMessage(msg: Message, client: Client): Promise<void> {
 async function handleReaction(
   reaction: MessageReaction,
   user: User | PartialUser,
+  action: 'add' | 'remove',
   client: Client
 ): Promise<void> {
   if (user.partial) {
@@ -59,7 +60,7 @@ async function handleReaction(
   // Assume the user is no longer partial since we handled that above
   if (reaction.message.guild?.id === config.FORTIES_GUILD) {
     await handleIcGbReviewReaction(reaction, client, user as User);
-    await handleProjectAnnouncementReaction(reaction, user as User);
+    await handleProjectAnnouncementReaction(reaction, user as User, action);
   }
 }
 

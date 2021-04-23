@@ -27,7 +27,7 @@ async function parse(msg: Message): Promise<ProjectRequestParams> {
 
     if (!typeValid)
       errors.push(
-        `Type (line one) must be either "IB" or "GB". You entered "${type}".`
+        `Type (line one) must be either "IC" or "GB". You entered "${type}".`
       );
     if (!nameValid)
       errors.push(
