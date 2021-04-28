@@ -12,8 +12,17 @@ export default async function handleShowcaseMessage(
     const showcaseChannel = (await client.channels.fetch(
       config.FORTIES_SHOWCASE
     )) as TextChannel;
+    let url;
 
-    const url = msg.attachments.first()?.url as string;
+    if (msg.attachments.size > 1) {
+      const acceptedFileFormats = new RegExp('.(jpe?g|png|gif|bmp)$', 'i');
+      const attachmentToUse = msg.attachments.find((attachment) =>
+        acceptedFileFormats.test(attachment.url)
+      );
+      if (attachmentToUse) url = attachmentToUse.url ;
+    } else {
+      url = msg.attachments.first()?.url as string;
+    }
 
     if (!url) {
       console.log('Missing showcase image:', {
