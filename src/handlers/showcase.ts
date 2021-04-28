@@ -1,4 +1,10 @@
-import { Message, Client, TextChannel, MessageEmbed } from 'discord.js';
+import {
+  Message,
+  Client,
+  TextChannel,
+  MessageEmbed,
+  MessageAttachment,
+} from 'discord.js';
 import config from '../config';
 
 export default async function handleShowcaseMessage(
@@ -13,16 +19,17 @@ export default async function handleShowcaseMessage(
       config.FORTIES_SHOWCASE
     )) as TextChannel;
 
-    const url = msg.attachments.first()?.url as string;
+    const acceptedFileFormats = new RegExp(
+      '.(jpe?g|png|gif|bmp|webp|tiff?)$',
+      'i'
+    );
+    const image = msg.attachments.find((attachment) =>
+      acceptedFileFormats.test(attachment.url)
+    );
 
-    if (!url) {
-      console.log('Missing showcase image:', {
-        author: msg.author.tag,
-        message_url: msg.url,
-      });
-
+    if (!image) {
       await msg.reply(
-        "something went wrong. We'll take a look, but in the meantime please ensure an image is attached and try again."
+        'showcase messages must contain an image. Accepted file types are .jpg, .png, .bmp, .gif, .webp, and .tif'
       );
 
       return;
@@ -37,22 +44,36 @@ export default async function handleShowcaseMessage(
         : trimmedContent;
     };
 
-    const embed = new MessageEmbed()
-      .setAuthor(
-        msg.author.username,
-        msg.author.avatarURL() ?? msg.author.defaultAvatarURL
-      )
-      .setDescription(trimDescription(msg.content))
-      .addField('Original Message', `[Jump 🔗](${msg.url})`, true)
-      .setImage(url)
-      .setFooter(`#${(msg.channel as TextChannel).name}`)
-      .setTimestamp();
+    const embed = new MessageEmbed({
+      author: {
+        name: msg.author.username,
+        icon_url: msg.author.avatarURL() ?? msg.author.defaultAvatarURL,
+      },
+      description: trimDescription(msg.content),
+      fields: [
+        {
+          name: 'Original Message',
+          value: `[Jump 🔗](${msg.url})`,
+          inline: false,
+        },
+      ],
+      image: {
+        url: image.url,
+        proxyURL: image.proxyURL,
+        height: image.height ?? 0,
+        width: image.width ?? 0,
+      },
+      timestamp: new Date(),
+      footer: {
+        text: `#${(msg.channel as TextChannel).name}`,
+      },
+    });
 
     const embedMessage = await showcaseChannel.send(embed);
 
     console.log('40s channel posted showcase:', {
       author: msg.author.tag,
-      image_url: url,
+      image_url: image.url,
       message_url: embedMessage.url,
     });
 
