@@ -73,8 +73,8 @@ export default async function handleShowcaseMessage(
 
     console.log('40s channel posted showcase:', {
       author: msg.author.tag,
-      image_url: image.url,
       message_url: embedMessage.url,
+      image: embed.image,
     });
 
     return;
