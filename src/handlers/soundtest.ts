@@ -7,7 +7,7 @@ export default async function handleSoundtestMessage(
   client: Client
 ): Promise<void> {
   if (
-    msg.content.includes(config.FORTIES_SOUNDTEST) &&
+    msg.content.includes(`<#${config.FORTIES_SOUNDTEST}>`) &&
     msg.channel.id !== config.FORTIES_SOUNDTEST
   ) {
     const soundTestChannel = (await client.channels.fetch(

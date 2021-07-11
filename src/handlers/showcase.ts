@@ -12,7 +12,7 @@ export default async function handleShowcaseMessage(
   client: Client
 ): Promise<void> {
   if (
-    msg.content.includes(config.FORTIES_SHOWCASE) &&
+    msg.content.includes(`<#${config.FORTIES_SHOWCASE}>`) &&
     msg.attachments.size > 0
   ) {
     const showcaseChannel = (await client.channels.fetch(
