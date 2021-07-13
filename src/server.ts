@@ -1,46 +1,57 @@
 import config from './config.js';
+import Discord = require('discord.js');
+import handleShowcaseMessage from './handlers/showcase';
+import handleSoundtestMessage from './handlers/soundtest';
 import {
-  Message,
-  Client,
-  MessageReaction,
-  User,
-  PartialUser,
-} from 'discord.js';
-import {
-  handleMessage as handleMessageAsync,
-  handleReaction as handleReactionAsync,
-} from './handlers';
+  handleIcGbRequestMessage,
+  handleIcGbReviewReaction,
+  handleProjectAnnouncementReaction,
+} from './handlers/project';
+import fetchPartial from './utils/fetchPartial';
 
-const client = new Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION'] });
+const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'USER', 'GUILD_MEMBER'] });
 
-client.on('ready', () => {
+client.once('ready', () => {
   console.log('==== READY ====');
 });
 
-// We use these wrappers because typescript eslint will throw a fit if we return
-//  an unresolved promise instead of void in the client handlers.
-function handleMessageSyncWrapper(msg: Message): void {
-  void handleMessageAsync(msg, client);
-}
+client.on('message', async (msg) => {
+  await fetchPartial(msg)
 
-// We use these wrappers because typescript eslint will throw a fit if we return
-//  an unresolved promise instead of void in the client handlers.
-function handleReactionSyncWrapper(
-  reaction: MessageReaction,
-  user: User | PartialUser,
-  action: 'add' | 'remove'
-): void {
-  void handleReactionAsync(reaction, user, action, client);
-}
+  // Ignore messages from bots
+  // Ignore messages from DMs
+  if (msg.author.bot || msg.guild?.id !== config.FORTIES_GUILD) return;
 
-client.on('message', handleMessageSyncWrapper);
+  await Promise.allSettled([
+    handleShowcaseMessage(msg, client),
+    handleSoundtestMessage(msg, client),
+    handleIcGbRequestMessage(msg, client)
+  ]);
+});
 
-client.on('messageReactionAdd', (messageReaction, user) =>
-  handleReactionSyncWrapper(messageReaction, user, 'add')
-);
+client.on('messageReactionAdd', async (reaction, user) => {
+  await Promise.all([fetchPartial(reaction), fetchPartial(user)])
 
-client.on('messageReactionRemove', (messageReaction, user) =>
-  handleReactionSyncWrapper(messageReaction, user, 'remove')
-);
+  // Ignore reactions from bots
+  // Ignore reactions from DMs
+  if (user.bot || reaction.message.guild?.id !== config.FORTIES_GUILD) return;
+
+  await Promise.allSettled([
+    handleIcGbReviewReaction(reaction, client, user as Discord.User),
+    handleProjectAnnouncementReaction(reaction, user as Discord.User, 'add')
+  ]);
+});
+
+client.on('messageReactionRemove', async (reaction, user) => {
+  await Promise.all([fetchPartial(reaction), fetchPartial(user)])
+
+  // Ignore reactions from bots
+  // Ignore reactions from DMs
+  if (user.bot || reaction.message.guild?.id !== config.FORTIES_GUILD) return;
+
+  await Promise.allSettled([
+    handleProjectAnnouncementReaction(reaction, user as Discord.User, 'remove')
+  ]);
+});
 
 void client.login(config.BOT_TOKEN);

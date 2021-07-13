@@ -2,8 +2,7 @@ import {
   Message,
   Client,
   TextChannel,
-  MessageEmbed,
-  MessageAttachment,
+  MessageEmbed
 } from 'discord.js';
 import config from '../config';
 
