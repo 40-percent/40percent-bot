@@ -1,46 +1,30 @@
 import config from './config.js';
+import { Client } from 'discord.js';
 import {
-  Message,
-  Client,
-  MessageReaction,
-  User,
-  PartialUser,
-} from 'discord.js';
-import {
-  handleMessage as handleMessageAsync,
-  handleReaction as handleReactionAsync,
+  handleMessage,
+  handleReaction
 } from './handlers';
+import fetchPartial from './utils/fetchPartial';
 
-const client = new Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION'] });
+const client = new Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'USER', 'GUILD_MEMBER'] });
 
-client.on('ready', () => {
+client.once('ready', () => {
   console.log('==== READY ====');
 });
 
-// We use these wrappers because typescript eslint will throw a fit if we return
-//  an unresolved promise instead of void in the client handlers.
-function handleMessageSyncWrapper(msg: Message): void {
-  void handleMessageAsync(msg, client);
-}
+client.on('message', async (msg) => {
+  await fetchPartial(msg)
+  await handleMessage(msg, client)
+});
 
-// We use these wrappers because typescript eslint will throw a fit if we return
-//  an unresolved promise instead of void in the client handlers.
-function handleReactionSyncWrapper(
-  reaction: MessageReaction,
-  user: User | PartialUser,
-  action: 'add' | 'remove'
-): void {
-  void handleReactionAsync(reaction, user, action, client);
-}
+client.on('messageReactionAdd', async (messageReaction, user) => {
+  await Promise.all([fetchPartial(messageReaction), fetchPartial(user)])
+  await handleReaction(messageReaction, user, 'add', client)
+});
 
-client.on('message', handleMessageSyncWrapper);
-
-client.on('messageReactionAdd', (messageReaction, user) =>
-  handleReactionSyncWrapper(messageReaction, user, 'add')
-);
-
-client.on('messageReactionRemove', (messageReaction, user) =>
-  handleReactionSyncWrapper(messageReaction, user, 'remove')
-);
+client.on('messageReactionRemove', async (messageReaction, user) => {
+  await Promise.all([fetchPartial(messageReaction), fetchPartial(user)])
+  await handleReaction(messageReaction, user, 'remove', client)
+});
 
 void client.login(config.BOT_TOKEN);

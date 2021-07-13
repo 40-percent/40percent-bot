@@ -4,7 +4,7 @@ import {
   Client,
   MessageReaction,
   User,
-  PartialUser,
+  PartialUser
 } from 'discord.js';
 import handleShowcaseMessage from './showcase';
 import handleSoundtestMessage from './soundtest';
@@ -16,15 +16,13 @@ import {
 
 async function handleMessage(msg: Message, client: Client): Promise<void> {
   // Ignore messages from bots.
-  if (msg.author.bot) {
-    return;
-  }
+  if (msg.author.bot || msg.guild?.id !== config.FORTIES_GUILD) return;
 
-  if (msg.guild?.id === config.FORTIES_GUILD) {
-    await handleShowcaseMessage(msg, client);
-    await handleSoundtestMessage(msg, client);
-    await handleIcGbRequestMessage(msg, client);
-  }
+  await Promise.all([
+    handleShowcaseMessage(msg, client),
+    handleSoundtestMessage(msg, client),
+    handleIcGbRequestMessage(msg, client)
+  ]);
 }
 
 async function handleReaction(
@@ -33,35 +31,13 @@ async function handleReaction(
   action: 'add' | 'remove',
   client: Client
 ): Promise<void> {
-  if (user.partial) {
-    try {
-      await user.fetch();
-    } catch (error) {
-      console.log('Something went wrong fetching the reaction:', error);
-      return;
-    }
-  }
-
   // Ignore reactions from bots.
-  if (user.bot) {
-    return;
-  }
+  if (user.bot || reaction.message.guild?.id !== config.FORTIES_GUILD) return;
 
-  // When we receive a reaction we check if the reaction is partial or not
-  if (reaction.partial) {
-    try {
-      await reaction.fetch();
-    } catch (error) {
-      console.log('Something went wrong fetching the reaction:', error);
-      return;
-    }
-  }
-
-  // Assume the user is no longer partial since we handled that above
-  if (reaction.message.guild?.id === config.FORTIES_GUILD) {
-    await handleIcGbReviewReaction(reaction, client, user as User);
-    await handleProjectAnnouncementReaction(reaction, user as User, action);
-  }
+  await Promise.all([
+    handleIcGbReviewReaction(reaction, client, user as User),
+    handleProjectAnnouncementReaction(reaction, user as User, action)
+  ]);
 }
 
 export { handleMessage, handleReaction };
