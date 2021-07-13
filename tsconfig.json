@@ -6,7 +6,10 @@
     "target": "ES5",
     "strict": true,
     "moduleResolution": "node",
-    "typeRoots": ["node_modules/@types"]
+    "typeRoots": ["node_modules/@types"],
+    "lib": [
+      "ES2021"
+    ]
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]

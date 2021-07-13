@@ -1,12 +1,15 @@
 import config from './config.js';
-import { Client } from 'discord.js';
+import Discord = require('discord.js');
+import handleShowcaseMessage from './handlers/showcase';
+import handleSoundtestMessage from './handlers/soundtest';
 import {
-  handleMessage,
-  handleReaction
-} from './handlers';
+  handleIcGbRequestMessage,
+  handleIcGbReviewReaction,
+  handleProjectAnnouncementReaction,
+} from './handlers/project';
 import fetchPartial from './utils/fetchPartial';
 
-const client = new Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'USER', 'GUILD_MEMBER'] });
+const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'USER', 'GUILD_MEMBER'] });
 
 client.once('ready', () => {
   console.log('==== READY ====');
@@ -14,17 +17,41 @@ client.once('ready', () => {
 
 client.on('message', async (msg) => {
   await fetchPartial(msg)
-  await handleMessage(msg, client)
+
+  // Ignore messages from bots
+  // Ignore messages from DMs
+  if (msg.author.bot || msg.guild?.id !== config.FORTIES_GUILD) return;
+
+  await Promise.allSettled([
+    handleShowcaseMessage(msg, client),
+    handleSoundtestMessage(msg, client),
+    handleIcGbRequestMessage(msg, client)
+  ]);
 });
 
-client.on('messageReactionAdd', async (messageReaction, user) => {
-  await Promise.all([fetchPartial(messageReaction), fetchPartial(user)])
-  await handleReaction(messageReaction, user, 'add', client)
+client.on('messageReactionAdd', async (reaction, user) => {
+  await Promise.all([fetchPartial(reaction), fetchPartial(user)])
+
+  // Ignore reactions from bots
+  // Ignore reactions from DMs
+  if (user.bot || reaction.message.guild?.id !== config.FORTIES_GUILD) return;
+
+  await Promise.allSettled([
+    handleIcGbReviewReaction(reaction, client, user as Discord.User),
+    handleProjectAnnouncementReaction(reaction, user as Discord.User, 'add')
+  ]);
 });
 
-client.on('messageReactionRemove', async (messageReaction, user) => {
-  await Promise.all([fetchPartial(messageReaction), fetchPartial(user)])
-  await handleReaction(messageReaction, user, 'remove', client)
+client.on('messageReactionRemove', async (reaction, user) => {
+  await Promise.all([fetchPartial(reaction), fetchPartial(user)])
+
+  // Ignore reactions from bots
+  // Ignore reactions from DMs
+  if (user.bot || reaction.message.guild?.id !== config.FORTIES_GUILD) return;
+
+  await Promise.allSettled([
+    handleProjectAnnouncementReaction(reaction, user as Discord.User, 'remove')
+  ]);
 });
 
 void client.login(config.BOT_TOKEN);
