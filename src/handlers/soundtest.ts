@@ -27,7 +27,10 @@ export default async function handleSoundtestMessage(
       );
       if (attachmentUrl) {
         const attachment = new MessageAttachment(attachmentUrl);
-        await soundTestChannel.send(messageToSend, attachment);
+        await soundTestChannel.send({
+          content: messageToSend,
+          files: [attachment],
+        });
       } else {
         await soundTestChannel.send(messageToSend);
       }

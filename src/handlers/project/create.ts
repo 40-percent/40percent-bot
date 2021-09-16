@@ -46,10 +46,8 @@ async function createProjectRole(
 ): Promise<Role> {
   // First create the role
   const role = await guild.roles.create({
-    data: {
-      name: roleName,
-      mentionable: true,
-    },
+    name: roleName,
+    mentionable: true,
   });
   // Then create the rank for manual add/removal
   const botCommandsChannel = (await client.channels.fetch(
@@ -141,12 +139,12 @@ async function announceProject(
   const serializedParams = AnnouncementParams.serialize(
     projectAnnouncementParams
   );
-  const msg = await announceChannel.send(
-    `Announcing the ${reviewParams.type} for ${reviewParams.name} by <@${reviewParams.ownerId}>!
-${reviewParams.description}
-To gain access to the project channel <#${channel.id}>, join the role <@&${projectAnnouncementParams.roleId}> by reacting to this announcement with :white_check_mark:!`,
-    [new MessageAttachment(reviewParams.imageUrl), serializedParams]
-  );
+  const msg = await announceChannel.send({
+    content: `Announcing the ${reviewParams.type} for ${reviewParams.name} by <@${reviewParams.ownerId}>!
+    ${reviewParams.description}
+    To gain access to the project channel <#${channel.id}>, join the role <@&${projectAnnouncementParams.roleId}> by reacting to this announcement with :white_check_mark:!`,
+    files: [new MessageAttachment(reviewParams.imageUrl), serializedParams],
+  });
   await msg.react('✅');
 }
 

@@ -1,5 +1,12 @@
 import config from './config.js';
-import { Client, User, Message, MessageReaction } from 'discord.js';
+import {
+  Client,
+  User,
+  Message,
+  MessageReaction,
+  PartialMessageReaction,
+  Intents,
+} from 'discord.js';
 import handleShowcaseMessage from './handlers/showcase';
 import handleSoundtestMessage from './handlers/soundtest';
 import {
@@ -16,13 +23,21 @@ function messageShouldBeHandled(msg: Message): boolean {
   return !msg.author.bot && msg.guild?.id === config.FORTIES_GUILD;
 }
 
-function reactionShouldBeHandled(reaction: MessageReaction, user: User) {
+function reactionShouldBeHandled(
+  reaction: MessageReaction | PartialMessageReaction,
+  user: User
+) {
   // Ignore reactions from bots
   // Ignore reactions from DMs
   return !user.bot && reaction.message.guild?.id === config.FORTIES_GUILD;
 }
 
 const client = new Client({
+  intents: [
+    Intents.FLAGS.GUILDS,
+    Intents.FLAGS.GUILD_MESSAGES,
+    Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+  ],
   partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'USER', 'GUILD_MEMBER'],
 });
 

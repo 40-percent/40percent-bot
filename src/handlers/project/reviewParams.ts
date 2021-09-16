@@ -47,7 +47,7 @@ async function validate(
 ): Promise<boolean> {
   const roles = await guild.roles.fetch();
   const roleExists =
-    roles.cache.find((role) => role.name === reviewParams.name) !== undefined;
+    roles.find((role) => role.name === reviewParams.name) !== undefined;
   const channelExists = guild.channels.cache.find(
     (channel) => channel.name === reviewParams.slug
   );

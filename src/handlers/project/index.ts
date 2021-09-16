@@ -7,6 +7,8 @@ import {
   User,
   Guild,
   MessageAttachment,
+  PartialMessageReaction,
+  Options,
 } from 'discord.js';
 import { ProjectAnnouncementParams } from './announcementParams';
 import { ProjectReviewParams } from './reviewParams';
@@ -41,10 +43,13 @@ async function handleIcGbRequestMessage(
       const reviewChannel = (await client.channels.fetch(
         config.IC_GB_REVIEW_CHANNEL
       )) as TextChannel;
-      const message = await reviewChannel.send(reviewMessage, [
-        new MessageAttachment(requestParams.imageUrl),
-        serializedParams,
-      ]);
+      const message = await reviewChannel.send({
+        content: reviewMessage,
+        files: [
+          new MessageAttachment(requestParams.imageUrl),
+          serializedParams,
+        ],
+      });
       await message.react('✅');
       await msg.reply('your request was successfully submitted for review.');
     } catch (error) {
@@ -54,7 +59,7 @@ async function handleIcGbRequestMessage(
 }
 
 async function handleIcGbReviewReaction(
-  reaction: MessageReaction,
+  reaction: MessageReaction | PartialMessageReaction,
   client: Client,
   reviewer: User
 ): Promise<void> {
@@ -99,7 +104,7 @@ async function handleIcGbReviewReaction(
 }
 
 async function handleProjectAnnouncementReaction(
-  reaction: MessageReaction,
+  reaction: MessageReaction | PartialMessageReaction,
   user: User,
   action: 'add' | 'remove'
 ): Promise<void> {
