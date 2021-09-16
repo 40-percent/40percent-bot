@@ -1,9 +1,4 @@
-import {
-  Message,
-  Client,
-  TextChannel,
-  MessageEmbed
-} from 'discord.js';
+import { Message, Client, TextChannel, MessageEmbed } from 'discord.js';
 import config from '../config';
 
 export default async function handleShowcaseMessage(
