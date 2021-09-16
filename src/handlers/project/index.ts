@@ -41,10 +41,10 @@ async function handleIcGbRequestMessage(
       const reviewChannel = (await client.channels.fetch(
         config.IC_GB_REVIEW_CHANNEL
       )) as TextChannel;
-      const message = (await reviewChannel.send(reviewMessage, [
+      const message = await reviewChannel.send(reviewMessage, [
         new MessageAttachment(requestParams.imageUrl),
         serializedParams,
-      ]));
+      ]);
       await message.react('✅');
       await msg.reply('your request was successfully submitted for review.');
     } catch (error) {
