@@ -1,46 +1,70 @@
 import config from './config.js';
+import { Client, User, Message, MessageReaction } from 'discord.js';
+import handleShowcaseMessage from './handlers/showcase';
+import handleSoundtestMessage from './handlers/soundtest';
 import {
-  Message,
-  Client,
-  MessageReaction,
-  User,
-  PartialUser,
-} from 'discord.js';
-import {
-  handleMessage as handleMessageAsync,
-  handleReaction as handleReactionAsync,
-} from './handlers';
+  handleIcGbRequestMessage,
+  handleIcGbReviewReaction,
+  handleProjectAnnouncementReaction,
+} from './handlers/project';
+import fetchPartial from './utils/fetchPartial';
+import callHandlers from './utils/callHandlers.js';
 
-const client = new Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION'] });
+function messageShouldBeHandled(msg: Message): boolean {
+  // Ignore messages from bots
+  // Ignore messages from DMs
+  return !msg.author.bot && msg.guild?.id === config.FORTIES_GUILD;
+}
 
-client.on('ready', () => {
+function reactionShouldBeHandled(reaction: MessageReaction, user: User) {
+  // Ignore reactions from bots
+  // Ignore reactions from DMs
+  return !user.bot && reaction.message.guild?.id === config.FORTIES_GUILD;
+}
+
+const client = new Client({
+  partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'USER', 'GUILD_MEMBER'],
+});
+
+client.once('ready', () => {
   console.log('==== READY ====');
 });
 
-// We use these wrappers because typescript eslint will throw a fit if we return
-//  an unresolved promise instead of void in the client handlers.
-function handleMessageSyncWrapper(msg: Message): void {
-  void handleMessageAsync(msg, client);
-}
+client.on('error', (err) => {
+  console.log('Uncaught error:', err);
+});
 
-// We use these wrappers because typescript eslint will throw a fit if we return
-//  an unresolved promise instead of void in the client handlers.
-function handleReactionSyncWrapper(
-  reaction: MessageReaction,
-  user: User | PartialUser,
-  action: 'add' | 'remove'
-): void {
-  void handleReactionAsync(reaction, user, action, client);
-}
+client.on('message', (msg) => {
+  void fetchPartial(msg).then(() => {
+    if (messageShouldBeHandled(msg)) {
+      void callHandlers(
+        handleShowcaseMessage(msg, client),
+        handleSoundtestMessage(msg, client),
+        handleIcGbRequestMessage(msg, client)
+      );
+    }
+  });
+});
 
-client.on('message', handleMessageSyncWrapper);
+client.on('messageReactionAdd', (reaction, user) => {
+  void Promise.all([fetchPartial(reaction), fetchPartial(user)]).then(() => {
+    if (reactionShouldBeHandled(reaction, user as User)) {
+      void callHandlers(
+        handleIcGbReviewReaction(reaction, client, user as User),
+        handleProjectAnnouncementReaction(reaction, user as User, 'add')
+      );
+    }
+  });
+});
 
-client.on('messageReactionAdd', (messageReaction, user) =>
-  handleReactionSyncWrapper(messageReaction, user, 'add')
-);
-
-client.on('messageReactionRemove', (messageReaction, user) =>
-  handleReactionSyncWrapper(messageReaction, user, 'remove')
-);
+client.on('messageReactionRemove', (reaction, user) => {
+  void Promise.all([fetchPartial(reaction), fetchPartial(user)]).then(() => {
+    if (reactionShouldBeHandled(reaction, user as User)) {
+      void callHandlers(
+        handleProjectAnnouncementReaction(reaction, user as User, 'remove')
+      );
+    }
+  });
+});
 
 void client.login(config.BOT_TOKEN);
