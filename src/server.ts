@@ -49,37 +49,37 @@ client.on('error', (err) => {
   console.log('Uncaught error:', err);
 });
 
-client.on('message', (msg) => {
-  void fetchPartial(msg).then(() => {
-    if (messageShouldBeHandled(msg)) {
-      void callHandlers(
-        handleShowcaseMessage(msg, client),
-        handleSoundtestMessage(msg, client),
-        handleIcGbRequestMessage(msg, client)
-      );
-    }
-  });
+client.on('message', async (msg) => {
+  await fetchPartial(msg);
+
+  if (!messageShouldBeHandled(msg)) return;
+
+  await callHandlers(
+    handleShowcaseMessage(msg, client),
+    handleSoundtestMessage(msg, client),
+    handleIcGbRequestMessage(msg, client)
+  );
 });
 
-client.on('messageReactionAdd', (reaction, user) => {
-  void Promise.all([fetchPartial(reaction), fetchPartial(user)]).then(() => {
-    if (reactionShouldBeHandled(reaction, user as User)) {
-      void callHandlers(
-        handleIcGbReviewReaction(reaction, client, user as User),
-        handleProjectAnnouncementReaction(reaction, user as User, 'add')
-      );
-    }
-  });
+client.on('messageReactionAdd', async (reaction, user) => {
+  await Promise.all([fetchPartial(reaction), fetchPartial(user)]);
+
+  if (!reactionShouldBeHandled(reaction, user as User)) return;
+
+  await callHandlers(
+    handleIcGbReviewReaction(reaction, client, user as User),
+    handleProjectAnnouncementReaction(reaction, user as User, 'add')
+  );
 });
 
-client.on('messageReactionRemove', (reaction, user) => {
-  void Promise.all([fetchPartial(reaction), fetchPartial(user)]).then(() => {
-    if (reactionShouldBeHandled(reaction, user as User)) {
-      void callHandlers(
-        handleProjectAnnouncementReaction(reaction, user as User, 'remove')
-      );
-    }
-  });
+client.on('messageReactionRemove', async (reaction, user) => {
+  await Promise.all([fetchPartial(reaction), fetchPartial(user)]);
+
+  if (!reactionShouldBeHandled(reaction, user as User)) return;
+
+  await callHandlers(
+    handleProjectAnnouncementReaction(reaction, user as User, 'remove')
+  );
 });
 
 void client.login(config.BOT_TOKEN);
