@@ -49,7 +49,7 @@ client.on('error', (err) => {
   console.log('Uncaught error:', err);
 });
 
-client.on('message', async (msg) => {
+client.on('messageCreate', async (msg) => {
   await fetchPartial(msg);
 
   if (!messageShouldBeHandled(msg)) return;
