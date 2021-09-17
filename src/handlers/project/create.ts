@@ -9,6 +9,7 @@ import {
   Snowflake,
   MessageAttachment,
   User,
+  CategoryChannel,
 } from 'discord.js';
 import AnnouncementParams from './announcementParams';
 import { ProjectAnnouncementParams } from './announcementParams';
@@ -59,14 +60,29 @@ async function createProjectRole(
   return role;
 }
 
+async function sortCategoryChannels(
+  guild: Guild,
+  categoryId: Snowflake
+): Promise<void> {
+  const category = await guild.channels.fetch(categoryId);
+  if (category instanceof CategoryChannel) {
+    const categoryChannels = [...category.children.values()];
+    categoryChannels.sort((a, b) => (a.name < b.name ? -1 : 1));
+    for await (const [index, channel] of categoryChannels.entries()) {
+      await channel.setPosition(index);
+    }
+  }
+}
+
 async function createProjectChannel(
   reviewParams: ProjectReviewParams,
   guild: Guild,
   role: Role
 ): Promise<TextChannel> {
-  return guild.channels.create(reviewParams.slug, {
-    parent:
-      reviewParams.type === 'IC' ? config.IC_CATEGORY : config.GB_CATEGORY,
+  const categoryId =
+    reviewParams.type === 'IC' ? config.IC_CATEGORY : config.GB_CATEGORY;
+  const newChannel = await guild.channels.create(reviewParams.slug, {
+    parent: categoryId,
     permissionOverwrites: getProjectChannelPermissions(
       guild,
       role.id,
@@ -74,6 +90,8 @@ async function createProjectChannel(
       reviewParams.type
     ),
   });
+  await sortCategoryChannels(guild, categoryId);
+  return newChannel;
 }
 
 function getProjectChannelPermissions(
