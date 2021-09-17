@@ -63,7 +63,7 @@ export default async function handleShowcaseMessage(
       },
     });
 
-    const embedMessage = await showcaseChannel.send(embed);
+    const embedMessage = await showcaseChannel.send({ embeds: [embed] });
 
     console.log('40s channel posted showcase:', {
       author: msg.author.tag,

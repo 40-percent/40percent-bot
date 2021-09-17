@@ -7,6 +7,7 @@ import {
   PartialDMChannel,
   PartialGuildMember,
   PartialMessage,
+  PartialMessageReaction,
   PartialUser,
   User,
 } from 'discord.js';
@@ -20,6 +21,7 @@ export type PartialResources =
   | PartialDMChannel
   | PartialGuildMember
   | PartialMessage
+  | PartialMessageReaction
   | PartialUser
   | User;
 
