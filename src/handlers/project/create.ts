@@ -55,7 +55,7 @@ async function createProjectRole(
     config.BOT_COMMANDS_CHANNEL
   )) as TextChannel;
   await botCommandsChannel.send(
-    `<@${reviewerId}> please enter \`?addrank ${roleName}\` to create the project rank, and remember to organize channels by alphabetical order`
+    `<@${reviewerId}> please enter \`?addrank ${roleName}\` to create the project rank.`
   );
   return role;
 }
