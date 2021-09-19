@@ -8,7 +8,9 @@ import {
   Guild,
   MessageAttachment,
   PartialMessageReaction,
-  Options,
+  MessageActionRow,
+  MessageButton,
+  ButtonInteraction,
 } from 'discord.js';
 import { ProjectAnnouncementParams } from './announcementParams';
 import { ProjectReviewParams } from './reviewParams';
@@ -43,14 +45,25 @@ async function handleIcGbRequestMessage(
       const reviewChannel = (await client.channels.fetch(
         config.IC_GB_REVIEW_CHANNEL
       )) as TextChannel;
-      const message = await reviewChannel.send({
+      const approveRejectRow = new MessageActionRow().addComponents(
+        new MessageButton()
+          .setCustomId('approveProjectReview')
+          .setLabel('Approve')
+          .setStyle('SUCCESS'),
+        new MessageButton()
+          .setCustomId('rejectProjectReview')
+          .setLabel('Reject')
+          .setStyle('DANGER')
+          .setDisabled(true)
+      );
+      await reviewChannel.send({
         content: reviewMessage,
         files: [
           new MessageAttachment(requestParams.imageUrl),
           serializedParams,
         ],
+        components: [approveRejectRow],
       });
-      await message.react('✅');
       await msg.reply('your request was successfully submitted for review.');
     } catch (error) {
       return;
@@ -58,49 +71,40 @@ async function handleIcGbRequestMessage(
   }
 }
 
-async function handleIcGbReviewReaction(
-  reaction: MessageReaction | PartialMessageReaction,
-  client: Client,
-  reviewer: User
+async function handleIcGbReviewInteraction(
+  interaction: ButtonInteraction,
+  client: Client
 ): Promise<void> {
   // Only handle reactions in the IC/GB review channel
+  console.log(interaction);
   if (
-    reaction.message.channel.id !== config.IC_GB_REVIEW_CHANNEL ||
-    reaction.emoji.name !== '✅' // The :white_check_mark: emoji is to accept review
+    interaction.channelId !== config.IC_GB_REVIEW_CHANNEL ||
+    interaction.customId != 'approveProjectReview'
   ) {
+    await interaction.reply('Received unknown reaction');
     return;
   }
-  const reviewChannel = (await client.channels.fetch(
-    config.IC_GB_REVIEW_CHANNEL
-  )) as TextChannel;
-  const attachmentUrls = reaction.message.attachments.map(
+  const reviewer = interaction.user;
+  const attachmentUrls = [...interaction.message.attachments.values()].map(
     (attachment) => attachment.url
   );
   if (attachmentUrls.length !== 2) {
-    await reviewChannel.send('Must include both an image and metadata.');
+    await interaction.reply('Must include both an image and metadata.');
     return;
   }
   const response = await axios.get<ProjectReviewParams>(attachmentUrls[1]);
   const reviewParams = response.data;
-  const guild = reaction.message.guild as Guild;
+  // Explicit narrowing because we know this will be a normal message
+  // sent in the 40s guild
+  const typedMessage = interaction.message as Message;
+  const guild = typedMessage.guild as Guild;
   const validParams = await ReviewParams.validate(reviewParams, guild);
   if (validParams) {
     await CreateProject.boilerplate(reviewParams, guild, reviewer, client);
+    await interaction.reply('Project approved: generated boilerplate');
   } else {
-    await reviewChannel.send('Role or channel already exists.');
+    await interaction.reply('Role or channel already exists.');
   }
-  // console.log(attachmentUrls);
-  // await Promise.all(
-  //   attachmentUrls.map(async (url) => {
-  //     const response = await axios.get<ProjectParams>(url);
-  //     const responseData = response.data;
-  //     console.log(responseData);
-  //     await announceChannel.send(
-  //       `message had attachment`,
-  //       new MessageAttachment(url)
-  //     );
-  //   })
-  // );
 }
 
 async function handleProjectAnnouncementReaction(
@@ -139,6 +143,6 @@ async function handleProjectAnnouncementReaction(
 
 export {
   handleIcGbRequestMessage,
-  handleIcGbReviewReaction,
   handleProjectAnnouncementReaction,
+  handleIcGbReviewInteraction,
 };

@@ -11,8 +11,8 @@ import handleShowcaseMessage from './handlers/showcase';
 import handleSoundtestMessage from './handlers/soundtest';
 import {
   handleIcGbRequestMessage,
-  handleIcGbReviewReaction,
   handleProjectAnnouncementReaction,
+  handleIcGbReviewInteraction,
 } from './handlers/project';
 import fetchPartial from './utils/fetchPartial';
 import callHandlers from './utils/callHandlers.js';
@@ -49,6 +49,12 @@ client.on('error', (err) => {
   console.log('Uncaught error:', err);
 });
 
+client.on('interactionCreate', async (interaction) => {
+  if (interaction.isButton()) {
+    await handleIcGbReviewInteraction(interaction, client);
+  }
+});
+
 client.on('messageCreate', async (msg) => {
   await fetchPartial(msg);
 
@@ -67,7 +73,6 @@ client.on('messageReactionAdd', async (reaction, user) => {
   if (!reactionShouldBeHandled(reaction, user as User)) return;
 
   await callHandlers(
-    handleIcGbReviewReaction(reaction, client, user as User),
     handleProjectAnnouncementReaction(reaction, user as User, 'add')
   );
 });
