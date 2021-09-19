@@ -9,6 +9,8 @@ import {
   Snowflake,
   MessageAttachment,
   User,
+  MessageActionRow,
+  MessageButton,
 } from 'discord.js';
 import AnnouncementParams from './announcementParams';
 import { ProjectAnnouncementParams } from './announcementParams';
@@ -139,13 +141,23 @@ async function announceProject(
   const serializedParams = AnnouncementParams.serialize(
     projectAnnouncementParams
   );
-  const msg = await announceChannel.send({
+  const joinLeaveRow = new MessageActionRow().addComponents(
+    new MessageButton()
+      .setCustomId('joinProjectRole')
+      .setLabel('Join')
+      .setStyle('SUCCESS'),
+    new MessageButton()
+      .setCustomId('leaveProjectRole')
+      .setLabel('Leave')
+      .setStyle('DANGER')
+  );
+  await announceChannel.send({
     content: `Announcing the ${reviewParams.type} for ${reviewParams.name} by <@${reviewParams.ownerId}>!
     ${reviewParams.description}
-    To gain access to the project channel <#${channel.id}>, join the role <@&${projectAnnouncementParams.roleId}> by reacting to this announcement with :white_check_mark:!`,
+    To gain access to the project channel <#${channel.id}>, join the role <@&${projectAnnouncementParams.roleId}> with the button below!`,
     files: [new MessageAttachment(reviewParams.imageUrl), serializedParams],
+    components: [joinLeaveRow],
   });
-  await msg.react('✅');
 }
 
 export default {

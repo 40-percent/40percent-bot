@@ -1,17 +1,10 @@
 import config from './config.js';
-import {
-  Client,
-  User,
-  Message,
-  MessageReaction,
-  PartialMessageReaction,
-  Intents,
-} from 'discord.js';
+import { Client, Message, Intents } from 'discord.js';
 import handleShowcaseMessage from './handlers/showcase';
 import handleSoundtestMessage from './handlers/soundtest';
 import {
   handleIcGbRequestMessage,
-  handleProjectAnnouncementReaction,
+  handleProjectAnnouncementInteraction,
   handleIcGbReviewInteraction,
 } from './handlers/project';
 import fetchPartial from './utils/fetchPartial';
@@ -23,22 +16,9 @@ function messageShouldBeHandled(msg: Message): boolean {
   return !msg.author.bot && msg.guild?.id === config.FORTIES_GUILD;
 }
 
-function reactionShouldBeHandled(
-  reaction: MessageReaction | PartialMessageReaction,
-  user: User
-) {
-  // Ignore reactions from bots
-  // Ignore reactions from DMs
-  return !user.bot && reaction.message.guild?.id === config.FORTIES_GUILD;
-}
-
 const client = new Client({
-  intents: [
-    Intents.FLAGS.GUILDS,
-    Intents.FLAGS.GUILD_MESSAGES,
-    Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-  ],
-  partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'USER', 'GUILD_MEMBER'],
+  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
+  partials: ['MESSAGE', 'CHANNEL', 'USER', 'GUILD_MEMBER'],
 });
 
 client.once('ready', () => {
@@ -51,7 +31,10 @@ client.on('error', (err) => {
 
 client.on('interactionCreate', async (interaction) => {
   if (interaction.isButton()) {
-    await handleIcGbReviewInteraction(interaction, client);
+    await callHandlers(
+      handleIcGbReviewInteraction(interaction, client),
+      handleProjectAnnouncementInteraction(interaction)
+    );
   }
 });
 
@@ -64,26 +47,6 @@ client.on('messageCreate', async (msg) => {
     handleShowcaseMessage(msg, client),
     handleSoundtestMessage(msg, client),
     handleIcGbRequestMessage(msg, client)
-  );
-});
-
-client.on('messageReactionAdd', async (reaction, user) => {
-  await Promise.all([fetchPartial(reaction), fetchPartial(user)]);
-
-  if (!reactionShouldBeHandled(reaction, user as User)) return;
-
-  await callHandlers(
-    handleProjectAnnouncementReaction(reaction, user as User, 'add')
-  );
-});
-
-client.on('messageReactionRemove', async (reaction, user) => {
-  await Promise.all([fetchPartial(reaction), fetchPartial(user)]);
-
-  if (!reactionShouldBeHandled(reaction, user as User)) return;
-
-  await callHandlers(
-    handleProjectAnnouncementReaction(reaction, user as User, 'remove')
   );
 });
 
