@@ -1,5 +1,6 @@
 declare namespace NodeJS {
   export interface ProcessEnv {
+    BOT_CLIENT_ID: string;
     BOT_TOKEN: string;
     FORTIES_GUILD: string;
     FORTIES_SHOWCASE: string;

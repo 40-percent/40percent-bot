@@ -1,17 +1,19 @@
 import config from './config.js';
 import {
   Client,
-  User,
   Message,
+  Intents,
   MessageReaction,
   PartialMessageReaction,
-  Intents,
+  User,
+  Interaction,
 } from 'discord.js';
 import handleShowcaseMessage from './handlers/showcase';
 import handleSoundtestMessage from './handlers/soundtest';
 import {
   handleIcGbRequestMessage,
-  handleIcGbReviewReaction,
+  handleIcGbReviewInteraction,
+  handleProjectAnnouncementInteraction,
   handleProjectAnnouncementReaction,
 } from './handlers/project';
 import fetchPartial from './utils/fetchPartial';
@@ -32,6 +34,12 @@ function reactionShouldBeHandled(
   return !user.bot && reaction.message.guild?.id === config.FORTIES_GUILD;
 }
 
+function interactionShouldBeHandled(interaction: Interaction) {
+  // Ignore reactions from bots
+  // Ignore reactions from DMs
+  return !interaction.user.bot && interaction.guildId === config.FORTIES_GUILD;
+}
+
 const client = new Client({
   intents: [
     Intents.FLAGS.GUILDS,
@@ -47,6 +55,16 @@ client.once('ready', () => {
 
 client.on('error', (err) => {
   console.log('Uncaught error:', err);
+});
+
+client.on('interactionCreate', async (interaction) => {
+  if (!interactionShouldBeHandled(interaction)) return;
+  if (interaction.isButton()) {
+    await callHandlers(
+      handleIcGbReviewInteraction(interaction, client),
+      handleProjectAnnouncementInteraction(interaction)
+    );
+  }
 });
 
 client.on('messageCreate', async (msg) => {
@@ -67,7 +85,6 @@ client.on('messageReactionAdd', async (reaction, user) => {
   if (!reactionShouldBeHandled(reaction, user as User)) return;
 
   await callHandlers(
-    handleIcGbReviewReaction(reaction, client, user as User),
     handleProjectAnnouncementReaction(reaction, user as User, 'add')
   );
 });
