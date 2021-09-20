@@ -8,6 +8,9 @@ import {
   MessageActionRow,
   MessageButton,
   ButtonInteraction,
+  MessageReaction,
+  User,
+  PartialMessageReaction,
 } from 'discord.js';
 import { ProjectAnnouncementParams } from './announcementParams';
 import { ProjectReviewParams } from './reviewParams';
@@ -173,8 +176,45 @@ async function handleProjectAnnouncementInteraction(
   }
 }
 
+// Deprecated, should be removed after a while when there are no more active
+// ICs or GBs with the checkmark emoji feature
+async function handleProjectAnnouncementReaction(
+  reaction: MessageReaction | PartialMessageReaction,
+  user: User,
+  action: 'add' | 'remove'
+): Promise<void> {
+  // Only handle reactions in the IC/GB review channel
+  if (reaction.message.channel.id !== config.IC_GB_ANNOUNCE_CHANNEL) {
+    return;
+  }
+  // The :white_check_mark: emoji is to subscribe
+  if (reaction.emoji.name === '✅') {
+    const attachmentUrls = reaction.message.attachments.map(
+      (attachment) => attachment.url
+    );
+    const response = await axios.get<ProjectAnnouncementParams>(
+      attachmentUrls[1]
+    );
+    const projectParams = response.data;
+    const guild = reaction.message.guild as Guild;
+    const member = await guild.members.fetch(user.id);
+
+    switch (action) {
+      case 'add': {
+        await member.roles.add(projectParams.roleId);
+        break;
+      }
+      case 'remove': {
+        await member.roles.remove(projectParams.roleId);
+        break;
+      }
+    }
+  }
+}
+
 export {
   handleIcGbRequestMessage,
   handleProjectAnnouncementInteraction,
+  handleProjectAnnouncementReaction,
   handleIcGbReviewInteraction,
 };
