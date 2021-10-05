@@ -16,6 +16,7 @@
     "@discordjs/rest": "^0.1.1-canary.0",
     "@types/node-fetch": "^2.5.10",
     "axios": "^0.21.0",
+    "country-code-lookup": "^0.0.19",
     "discord-api-types": "^0.23.1",
     "discord.js": "^13.1.0",
     "slugify": "^1.4.6"
