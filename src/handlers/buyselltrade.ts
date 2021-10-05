@@ -1,24 +1,37 @@
-import { Message, Client, TextChannel } from 'discord.js';
+import {
+  Message,
+  Client,
+  TextChannel
+} from 'discord.js';
 import config from '../config';
+
+const containsValidLocation = (msg: string) => {
+  const locationFormat = new RegExp(
+    '\[.{2,10}\]',
+    'i'
+  );
+  return locationFormat.test(msg);
+};
 
 export default async function handleBuySellTradeMessage(
   msg: Message,
   client: Client
 ): Promise<void> {
-  const buySellTradeChannel = (await client.channels.fetch(
-    config.BUY_SELL_TRADE_CHANNEL
-  )) as TextChannel;
-  await Promise.all(
-    // Parse the message using regex to validate location tag
+    if (containsValidLocation(msg.content)) return;
 
-    // ignore if present and exit
+    const buySellTradeChannel = (await client.channels.fetch(
+      config.BUY_SELL_TRADE_CHANNEL
+    )) as TextChannel;
+    const buySellTradeDiscussionChannel = (await client.channels.fetch(
+      config.BUY_SELL_TRADE_DISCUSSION_CHANNEL
+    )) as TextChannel;
+    const msgCopy = msg;
 
-    // if missing, copy msg
-
-    // delete users msg from bst
+    await msg.delete()
+      .then(msg => console.log(`Deleted message in BST from: ${msg.author.username} for missing location.`))
+      .catch(console.error);
 
     // ping them in bst discussion w/ private quoted reply
 
     // TODO: can we remove slowmode timer?
-  )
 }

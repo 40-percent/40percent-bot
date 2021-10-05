@@ -8,6 +8,7 @@ import {
   User,
   Interaction,
 } from 'discord.js';
+import handleBuySellTradeMessage from './handlers/buyselltrade';
 import handleShowcaseMessage from './handlers/showcase';
 import handleSoundtestMessage from './handlers/soundtest';
 import {
@@ -73,6 +74,7 @@ client.on('messageCreate', async (msg) => {
   if (!messageShouldBeHandled(msg)) return;
 
   await callHandlers(
+    handleBuySellTradeMessage(msg, client),
     handleShowcaseMessage(msg, client),
     handleSoundtestMessage(msg, client),
     handleIcGbRequestMessage(msg, client)
