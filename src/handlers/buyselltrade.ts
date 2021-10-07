@@ -7,11 +7,7 @@ import {
 import config from '../config';
 
 const containsValidLocation = (msg: string) => {
-  console.log(msg)
-  const locationFormat = new RegExp(
-    '\[.{2,10}\]+',
-    'i'
-  );
+  const locationFormat = /\[{1}[^\]]{2,10}\]{1}/im;
   return locationFormat.test(msg);
 };
 
@@ -19,7 +15,7 @@ export default async function handleBuySellTradeMessage(
   msg: Message,
   client: Client
 ): Promise<void> {
-    console.log(containsValidLocation(msg.content))
+    if (msg.channel.isThread()) return;
     if (containsValidLocation(msg.content)) return;
 
     const buySellTradeDiscussionChannel = (await client.channels.fetch(
@@ -32,11 +28,7 @@ export default async function handleBuySellTradeMessage(
       .catch(console.error);
 
     await buySellTradeDiscussionChannel.send(`
-  ${Formatters.userMention(msg.author.id)}, your request was removed because it lacked a valid location or the formatting was incorrect.
-  Please review the BST rules and resubmit your message:
+  ${Formatters.userMention(msg.author.id)}, your request was removed because it lacked a valid location or the formatting was incorrect. Please review the BST rules and resubmit your message:
   ${msgCopy}
-`)
-    // ping them in bst discussion w/ private quoted reply
-
-    // TODO: can we remove slowmode timer?
+`);
 }
