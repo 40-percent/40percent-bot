@@ -12,5 +12,7 @@ declare namespace NodeJS {
     GB_CATEGORY: string;
     WALLET_DESTROYER_ROLE: string;
     BOT_COMMANDS_CHANNEL: string;
+    BUY_SELL_TRADE_CHANNEL: string;
+    BUY_SELL_TRADE_DISCUSSION_CHANNEL: string;
   }
 }
